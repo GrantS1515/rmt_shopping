@@ -1,0 +1,36 @@
+<IngredientsScreen>:
+
+	name: 'IngredientsScreen'
+	myIngredientScroller: _myIngredientScroller
+
+	RelativeLayout:
+		id: _layout
+
+		BoxLayout:
+			size_hint: (1, 0.25)
+			pos_hint: {'x': 0, 'top': 1}
+
+			Button:
+				text: 'B1'
+
+			Button:
+				text: 'B2'
+
+			Button:
+				text: 'B3'
+
+		IngredientScroller:
+			id: _myIngredientScroller
+		
+		BoxLayout:
+			size_hint: (1, 0.25)
+			pos_hint: {'x': 0, 'y': 0}
+
+			Button:
+				text: 'Delete Ingredient'
+
+			Button:
+				text: 'Add Ingredient'
+				on_touch_down: root.myIngredientScroller.myTree.update()
+
+			
