@@ -11,6 +11,7 @@ Welcome to Shopping App's documentation!
    :caption: Contents:
 
    introduction
+   doc_tree
 
 
 Indices and tables

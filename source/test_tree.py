@@ -102,11 +102,8 @@ def test_remove_1(tree_1):
 	assert tree.get_leaf('Muffin').parents == {'Desserts'}
 	assert tree.get_leaf('Ice Cream').parents == {'Desserts'}
 
-	try:
+	with pytest.raises(Exception):
 		tree.get_leaf('French Bread')
-		assert False
-	except:
-		pass
 
 def test_remove_2(tree_1):
 	'''
@@ -126,17 +123,12 @@ def test_remove_2(tree_1):
 	assert tree.get_leaf('Muffin').parents == {'Desserts'}
 	assert tree.get_leaf('Ice Cream').parents == {'Desserts'}
 
-	try:
+	with pytest.raises(Exception):
 		tree.get_leaf('Breads')
-		assert False
-	except:
-		pass
 
-	try:
+	with pytest.raises(Exception):
 		tree.get_leaf('French Bread')
-		assert False
-	except:
-		pass
+
 
 def test_remove_3(tree_1):
 	tree = tree_1
@@ -155,17 +147,23 @@ def test_remove_3(tree_1):
 	assert tree.get_leaf('Muffin').parents == {'Desserts'}
 	assert tree.get_leaf('Ice Cream').parents == {'Desserts'}
 
-	try:
+	with pytest.raises(Exception):
 		tree.get_leaf('Breads')
-		assert False
-	except:
-		pass
 
-	try:
+	with pytest.raises(Exception):
 		tree.get_leaf('French Bread')
-		assert False
-	except:
-		pass
+
+# def test_remove_4(tree_1):
+# 	tree = tree_1
+
+# 	tree.add('Fruit')
+
+# 	for i in tree:
+# 		print(i)
+		
+# 	tree.remove('Fruit')
+
+# 	assert False
 
 def test_iter_1(tree_1):
 
@@ -190,6 +188,25 @@ def test_init_1():
 
 	assert tree.get_leaf('A').value == 5
 
+def test_root_property_1(tree_1):
+	tree = tree_1
+
+	assert tree._root_leaf_names == {'Desserts', 'Breads'}
+
+def test_bfs_1(tree_1):
+
+	tree = tree_1
+	tree_1.add('Fruits')
+	tree_1.add('Banana', {'Fruits'})
+	new_tree = Tree(Leaf)
+
+	# this works when I can make another tree without throwing an error
+	for leaf_name in tree.bfs():
+		new_tree.add(leaf_name, tree.get_leaf(leaf_name).parents)
+
+	assert new_tree == tree
+
+
 @pytest.fixture
 def shopping_tree_1():
 	tree = Shopping_Tree(Leaf, 'temp')
@@ -204,17 +221,29 @@ def shopping_tree_1():
 
 def test_save_1(shopping_tree_1):
 	tree = shopping_tree_1
+	tree.save()
+	new_tree = Shopping_Tree(Leaf, 'temp')
+	assert tree == new_tree
 
-	# old_tree_names = set()
-	# for tree_leaf in tree:
-	# 	old_tree_names.add(tree_leaf.name)
+class observer_1():
 
-	# tree.save()
-	# tree = None
-	# new_tree = Shopping_Tree(Leaf, 'temp')
+	def __init__(self):
+		self.data = None
 
-	# new_tree_names = set()
-	# for tree_leaf in new_tree:
-	# 	new_tree_names.add(tree_leaf.name)
+	def update(self, shopping_tree):
+		self.data = shopping_tree.get_leaf('Ice Cream')
 
-	# assert old_tree_names == new_tree_names
+def test_observer(shopping_tree_1):
+	tree = shopping_tree_1
+
+	obs = observer_1()
+	tree.observers.append(obs)
+
+	tree.update()
+
+	assert obs.data.name == 'Ice Cream'
+
+	tree.remove('Ice Cream')
+
+	with pytest.raises(Exception):
+		tree.update()
