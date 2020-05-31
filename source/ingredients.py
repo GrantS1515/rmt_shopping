@@ -11,17 +11,24 @@ from kivy.app import App
 from kivy.uix.popup import Popup 
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
+from collections import defaultdict
+from kivy.clock import Clock
 
 class IngredientsScreen(Screen):
-	def __init__(self, **kwargs):
+	def __init__(self, screenmanager, **kwargs):
 		super().__init__(**kwargs)
-		self.add_widget(IngredientLayout())
-		
+		self.add_widget(IngredientLayout(screenmanager))
 
 class IngredientLayout(RelativeLayout):
-	def __init__(self, **kwargs):
+	def __init__(self, screenmanager, **kwargs):
 		super().__init__(**kwargs)
-		view_tree = View_Tree()
+
+		RB = Recipe_Button(screenmanager)
+		self.add_widget(RB)
+
+		ingredient_tree = App.get_running_app().Ingredient_Tree
+
+		view_tree = View_Tree(ingredient_tree)
 		
 		add_layout = Add_Ingredient_Layout()
 
@@ -33,8 +40,7 @@ class IngredientLayout(RelativeLayout):
 		text_input = Text_Input_Popup()
 		add_layout.add_widget(text_input)
 
-		ingred_tree = App.get_running_app().Ingredient_Tree
-		ok_pop_button = Ok_Popup_Button(add_pop, text_input, view_tree, ingred_tree)
+		ok_pop_button = Ok_Popup_Button(add_pop, text_input, view_tree, ingredient_tree)
 		add_layout.add_widget(ok_pop_button)
 
 
@@ -44,19 +50,21 @@ class IngredientLayout(RelativeLayout):
 		scroller = IngredientScroller(view_tree)
 		self.add_widget(scroller)
 
-		del_ingredient = Delete_Ingredient_Button(view_tree, ingred_tree)
+		del_ingredient = Delete_Ingredient_Button(view_tree, ingredient_tree)
 		self.add_widget(del_ingredient)
 
+class Recipe_Button(Button):
 
+	def __init__(self, screenmanager, **kwargs):
+		super().__init__(**kwargs)
+		self.screenmanager = screenmanager
 
+	def on_press(self):
+		self.screenmanager.current = 'Recipe_Screen'
 
 class IngredientScroller(ScrollView):
 	def __init__(self, view_tree, **kwargs):
 		super().__init__(**kwargs)
-
-		self.size_hint= (1, 0.5)
-		self.pos_hint = {'y': 0.25}
-		self.do_scroll_x = False
 
 		self.view_tree = view_tree
 		view_tree.size_hint_y=None
@@ -66,39 +74,44 @@ class IngredientScroller(ScrollView):
 
 class View_Tree(TreeView):
 
-	def __init__(self, **kwargs):
+	def __init__(self, shopping_tree, **kwargs):
 		super().__init__(**kwargs)
-		self.Shopping_Tree = App.get_running_app().Ingredient_Tree
-		self.Shopping_Tree.observers.append(self)
-		self.Shopping_Tree.update()
+		self.tree = shopping_tree
+		self.tree.observers.append(self)
+		self.tree.update()
+
+	def _build_tree(self, tree):
+
+		name2node = defaultdict(list)
+		for leaf_name in tree.bfs():
+			
+			leaf = tree.get_leaf(leaf_name)
+
+			# root case
+			if leaf.parents == set():
+				node = TreeViewLabel(text=leaf_name)
+				name2node[leaf_name].append(node)
+				self.add_node(node)
+
+			else:
+				for parent_name in leaf.parents:
+
+					for parent_node in tuple(name2node[parent_name]):
+						node = TreeViewLabel(text=leaf_name)
+						name2node[leaf_name].append(node)
+						self.add_node(node, parent_node)
+
+	def _clear_tree(self):
+		for node in list(self.iterate_all_nodes()):
+			self.remove_node(node)
+
+	def _delay(self, dt):
+		pass
 
 	def update(self, tree):
-
-		'''
-		TODO: cannot handle the case of one node having two parents
-		'''
-
-		for i in self.iterate_all_nodes():
-			# print(i.text)
-			self.remove_node(i)
-
-		for i in self.iterate_all_nodes():
-			# print(i.text)
-			self.remove_node(i)
-
-		leaf_name_2_node = {}
-
-		for leaf_name in self.Shopping_Tree.bfs():
-			leaf = self.Shopping_Tree.get_leaf(leaf_name)
-
-			view_node = TreeViewLabel(text=leaf_name)
-			leaf_name_2_node[leaf_name] = view_node
-
-			if leaf.parents != set():
-				for leaf_parent_name in leaf.parents:
-					self.add_node(view_node, leaf_name_2_node[leaf_parent_name])
-			else:
-				self.add_node(view_node, None)
+		self._clear_tree()
+		Clock.schedule_once(self._delay, 0.2)
+		self._build_tree(tree)
 
 class Add_Ingredient_Popup(Popup):
 	def __init__(self, add_ingredient_layout, **kwargs):
@@ -128,8 +141,13 @@ class Delete_Ingredient_Button(Button):
 
 	def on_press(self):
 
-		leaf_name = self.view_tree.selected_node.text
+		node = self.view_tree.selected_node
 
+		if node == None:
+			Error_Popup('Cannot delete entire tree').open()
+			return
+
+		node.text = leaf_name	
 		if leaf_name == 'Root':
 			Error_Popup('Cannot delete entire tree').open()
 		else:
@@ -173,21 +191,23 @@ class Ok_Popup_Button(Button):
 		myText = myText[0].upper() + myText[1:]
 
 		# throw an error popup when the item already exists in some other category for now
-		try:
-			self.ingredient_tree.get_leaf(myText)
-			Error_Popup('Ingredient Already in Tree').open()
-		except Exception:
+		# try:
+		# 	self.ingredient_tree.get_leaf(myText)
+		# 	Error_Popup('Ingredient Already in Tree').open()
+		# except Exception:
 
-			if self.view_tree.selected_node.text == 'Root':
-				self.ingredient_tree.add(myText)
-			else:
-				self.ingredient_tree.add(myText, {self.view_tree.selected_node.text})
-			self.ingredient_tree.update()
-			self.ingredient_tree.save()
+		if self.view_tree.selected_node == None:
+			self.ingredient_tree.add(myText)
+		elif self.view_tree.selected_node.text == 'Root':
+			self.ingredient_tree.add(myText)
+		else:
+			self.ingredient_tree.add(myText, {self.view_tree.selected_node.text})
+		
+		self.ingredient_tree.update()
+		self.ingredient_tree.save()
 
-		finally:
-			self.popup.dismiss()
-
+		# finally:
+		self.popup.dismiss()
 
 class Error_Popup(Popup):
 
@@ -196,3 +216,4 @@ class Error_Popup(Popup):
 		self.title = 'We Have a Problem'
 		self.size_hint = (0.75, 0.75)
 		self.content = Label(text=error_text)
+

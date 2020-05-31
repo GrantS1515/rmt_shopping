@@ -3,23 +3,15 @@
 	name: 'IngredientsScreen'
 
 	RelativeLayout:
-
-		BoxLayout:
-			size_hint: (1, 0.25)
+		Label:
+			text: 'Ingredient Screen'
 			pos_hint: {'x': 0, 'top': 1}
-
-			Button:
-				text: 'B1'
-
-			Button:
-				text: 'B2'
-
-			Button:
-				text: 'B3'			
+			size_hint: (0.3, 0.25)
 
 <IngredientScroller>:
 	pos_hint: {'center_y': 0.5}
-	size_hint: (1, 0.75)
+	size_hint: (1, 0.5)
+	do_scroll_x: False
 
 <Add_Ingredient_Button>:
 	text: 'Add Ingredient'
@@ -47,3 +39,8 @@
 	text: 'Delete Ingredient'
 	pos_hint: {'x': 0, 'y': 0}
 	size_hint: (0.5, 0.25)
+
+<Recipe_Button>:
+	text: 'Build Receipes'
+	pos_hint: {'center_x': 0.5, 'top': 1}
+	size_hint: (0.3, 0.25)

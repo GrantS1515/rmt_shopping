@@ -91,6 +91,9 @@ class Tree():
 		'''
 		Remove a leaf and all the children of the leaf.
 
+		TODO:
+			Does not seem to work when multiple things are in the tree by the same name
+
 		Args:
 			leaf_name: str name of the leaf to be removed
 		'''
@@ -131,18 +134,26 @@ class Tree():
 
 	def bfs(self):
 		'''
-		Return a generator that implments breadth first search returning the names of the leafs
+		Return a list that implments breadth first search returning the names of the leafs
 		'''
 
 		q = list(self._root_leaf_names)
+		myList = []
+		seen_set = set()
 
 		while q != []:
 			myVal = q.pop(0)
 
+			if myVal not in seen_set:
+				seen_set.add(myVal)
+				myList.append(myVal)
+
 			if myVal != set():
 				q.extend(self.get_leaf(myVal).children)
 
-			yield myVal
+			# yield myVal
+
+		return myList
 
 	def __iter__(self):
 		return self._LeafDict.keys().__iter__()
