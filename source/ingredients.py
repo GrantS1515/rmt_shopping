@@ -1,15 +1,14 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
 from view_database import View_Ingredient_Scaffold
-from kivy.uix.button import Button
 from kivy.uix.popup import Popup
-from kivy.uix.textinput import TextInput
-from database import Node
 from add_ingredient_popup import Add_Ingredient_Layout_Scaffold
+from general_classes import Launch_Popup, Remove_From_TreeView, Screen_Selector
 
-class IngredientsScreen(Screen):
+class Ingredients_Screen(Screen):
 	def __init__(self, ingredient_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
+		self.name = 'Ingredients_Screen'
 		self.add_widget(IngredientLayout(ingredient_data, screenmanager))
 
 class IngredientLayout(RelativeLayout):
@@ -17,8 +16,8 @@ class IngredientLayout(RelativeLayout):
 		super().__init__(**kwargs)
 
 		# setup the tree to view the database
-		VD = View_Ingredient_Scaffold(ingredient_data)
-		VD.update()
+		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5}}
+		VD = View_Ingredient_Scaffold(ingredient_data, **kwargs)
 		self.add_widget(VD)
 
 		# make the popup
@@ -33,36 +32,14 @@ class IngredientLayout(RelativeLayout):
 
 		# remove button
 		kwargs = {'text': 'Remove Ingredient', 'size_hint': (0.5, 0.1), 'pos_hint': {'x': 0, 'y': 0}}
-		remButton = Remove_Ingredient(VD, ingredient_data, **kwargs)
+		remButton = Remove_From_TreeView(VD, ingredient_data, **kwargs)
 		self.add_widget(remButton)
 
-class Launch_Popup(Button):
-	def __init__(self, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.popup = popup
+		# add the button to switch to recipes
+		kwargs = {'size_hint': (1, 0.1), 'pos_hint': {'top': 1}}
+		selector = Screen_Selector(screenmanager, **kwargs)
+		selector.ingredient_screen_button.background_color = (0, 1, 0, 1)
+		self.add_widget(selector)
 
-	def on_press(self):
-		self.popup.open()
 
-class Dismiss_Popup(Button):
-	def __init__(self, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.popup = popup
 
-	def on_press(self):
-		self.popup.dismiss()
-
-class Remove_Ingredient(Button):
-	def __init__(self, tree_view, ingredient_data, **kwargs):
-		super().__init__(**kwargs)
-		self.ingredient_data = ingredient_data
-		self.tree_view = tree_view
-
-	def on_press(self):
-		tree_node = self.tree_view.selected_node
-		if tree_node != None:
-			if tree_node.text != 'Root':
-				ingredient = self.ingredient_data.get_node(tree_node.text)
-				self.ingredient_data.remove(ingredient)
-				self.ingredient_data.save()
-				self.ingredient_data.update_observers()

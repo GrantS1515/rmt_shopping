@@ -1,5 +1,6 @@
 import pytest
-from database import OD_Scaffold, Node
+from database import OD_Scaffold, Node, Recipe_Scaffold, Quantity_Ingredient
+import os
 
 class Observer_1():
 
@@ -102,3 +103,69 @@ class Test_OD_interface_1():
 
 		assert self.OD.get_node('fruit').name == 'fruit'
 		assert self.OD.get_node('dessert').name == 'dessert'
+
+@pytest.fixture
+def tree_2():
+	RD = Recipe_Scaffold('temp_recipe', 'Western Omlet')
+
+	pep = Quantity_Ingredient(1, 'number', 'pepper')
+	eggs = Quantity_Ingredient(3, 'number', 'eggs')
+	onion = Quantity_Ingredient(0.5, 'number', 'onion')
+
+	RD.add(pep)
+	RD.add(eggs)
+	RD.add(onion)
+
+	return RD
+
+class Test_Recipe_Interface_1():
+
+	filename = 'temp_recipe'
+
+	def test_init_1(self):
+
+		if os.path.exists(self.filename + '.data'):
+			os.remove(self.filename + '.data')
+
+		# for a new file must call an exception without a name for recipe
+		with pytest.raises(Exception):
+			Recipe_Scaffold(self.filename)
+
+		# should not throw exception
+		Recipe_Scaffold(self.filename, 'temp')
+
+	def test_save_1(self, tree_2):
+		if os.path.exists(self.filename + '.data'):
+			os.remove(self.filename + '.data')
+
+		assert tree_2.get_node('pepper').name == 'pepper'
+		assert tree_2.get_node('pepper').quantity == 1
+		assert tree_2.get_node('eggs').name == 'eggs'
+		assert tree_2.get_node('eggs').quantity == 3
+		assert tree_2.get_node('onion').name == 'onion'
+		assert tree_2.get_node('onion').quantity == 0.5
+
+		tree_2.save()
+		tree_2 = None
+
+		new_tree = Recipe_Scaffold(self.filename)
+
+		assert new_tree.get_node('pepper').name == 'pepper'
+		assert new_tree.get_node('pepper').quantity == 1
+		assert new_tree.get_node('eggs').name == 'eggs'
+		assert new_tree.get_node('eggs').quantity == 3
+		assert new_tree.get_node('onion').name == 'onion'
+		assert new_tree.get_node('onion').quantity == 0.5
+
+	def test_init_2(self):
+
+		# check to make sure no name if file already exists
+		if os.path.exists(self.filename + '.data'):
+			os.remove(self.filename + '.data')
+
+
+		RD = Recipe_Scaffold(self.filename, 'Western Omlet')
+		RD.save()
+
+		with pytest.raises(Exception):
+			Recipe_Scaffold(self.filename, name='wrong name')

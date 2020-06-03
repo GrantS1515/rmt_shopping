@@ -14,10 +14,16 @@ class Observable_Database(ABC):
 
 	@abstractmethod
 	def __init__(self, filename, **kwargs):
-		self.observers = []	
+		self.observers = []
+		self.filename = filename + '.data'
+		self._load_file()
 
 	@abstractmethod
 	def save(self):
+		pass
+
+	@abstractmethod
+	def _load_file(self):
 		pass
 
 	@abstractmethod
@@ -43,13 +49,15 @@ class Observable_Database(ABC):
 class OD_Scaffold(Observable_Database):
 
 	def __init__(self, filename, **kwargs):
-		super().__init__(filename, **kwargs)
-		self.filename = filename + 'data'
 		self.data = {}
+		super().__init__(filename, **kwargs)
 
+		
+	def _load_file(self):
 		if os.path.exists(self.filename):
 			with open(self.filename, 'rb') as f:
 				self.data = pickle.load(f)
+
 
 	def save(self):
 		with open(self.filename, 'wb') as f:
@@ -66,3 +74,35 @@ class OD_Scaffold(Observable_Database):
 
 	def __iter__(self):
 		return self.data.values().__iter__()
+
+class Quantity_Ingredient(Node):
+
+	def __init__(self, quantity, quantity_type, name, **kwargs):
+		super().__init__(name, **kwargs)
+		self.quantity = quantity
+		self.quantity_type = quantity_type
+
+	def __str__(self):
+		return str(self.quantity) + ', ' + self.quantity_type + ' of ' + self.name
+
+class Recipe_Scaffold(OD_Scaffold):
+	def __init__(self, filename, name = None, **kwargs):
+		self.name = name
+		super().__init__(filename, **kwargs)
+		
+	def _load_file(self):
+		if os.path.exists(self.filename):
+
+			if self.name != None:
+				raise Exception('Must not rename recipe when loading from file')
+
+			with open(self.filename, 'rb') as f:
+					self.data, self.name = pickle.load(f)
+
+		if self.name == None:
+			raise Exception('Must name recipe database')
+
+	def save(self):
+		data = (self.data, self.name)
+		with open(self.filename, 'wb') as f:
+			pickle.dump(data, f)
