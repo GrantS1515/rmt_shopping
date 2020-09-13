@@ -21,7 +21,6 @@ class View_Database(TreeView):
 		self._clear_view()
 		Clock.schedule_once(self._build_view, 0.1)
 
-
 class View_Ingredient_Scaffold(View_Database):
 	def __init__(self, data, **kwargs):
 		super().__init__(data, **kwargs)
@@ -36,7 +35,6 @@ class View_Recipe_Node(Label):
 	def __init__(self, recipe_node, **kwargs):
 		super().__init__(**kwargs)
 		self.recipe_node = recipe_node
-		# self.update()
 
 	def update(self):
 		self.text = self.recipe_node.__str__()

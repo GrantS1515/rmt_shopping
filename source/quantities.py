@@ -1,9 +1,11 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
-from view_database import View_Ingredient_Scaffold
 from kivy.uix.popup import Popup
-from add_ingredient_popup import Add_Ingredient_Layout_Scaffold
-from general_classes import Launch_Popup, Remove_From_TreeView, Screen_Selector
+
+from view import View_Ingredient_Scaffold
+from popup_utils import Launch_Popup, Add_Ingredient_Layout_Scaffold
+from treeview_utils import Remove_From_TreeView
+from screen_utils import Screen_Selector
 
 class Quantities_Screen(Screen):
 	def __init__(self, quantities_data, screenmanager, **kwargs):
@@ -30,7 +32,7 @@ class Quantities_Layout(RelativeLayout):
 		addButton = Launch_Popup(add_pop, **kwargs)
 		self.add_widget(addButton)
 
-		# # remove button
+		# remove button
 		kwargs = {'text': 'Remove Quantity', 'size_hint': (0.5, 0.1), 'pos_hint': {'x': 0, 'y': 0}}
 		remButton = Remove_From_TreeView(VD, quantities_data, **kwargs)
 		self.add_widget(remButton)

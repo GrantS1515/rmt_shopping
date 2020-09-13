@@ -1,7 +1,8 @@
 from kivy.uix.screenmanager import Screen
-from general_classes import Screen_Selector, Screen_Button
 from kivy.uix.relativelayout import RelativeLayout
-from view_database import View_Ingredient_Scaffold
+
+from screen_utils import Screen_Selector, Screen_Button
+from view import View_Ingredient_Scaffold
 
 class Cookbook_Home_Screen(Screen):
 	def __init__(self, cookbook_data, screenmanager, **kwargs):

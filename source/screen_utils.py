@@ -1,37 +1,6 @@
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 
-class Launch_Popup(Button):
-	def __init__(self, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.popup = popup
-
-	def on_press(self):
-		self.popup.open()
-
-class Dismiss_Popup(Button):
-	def __init__(self, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.popup = popup
-
-	def on_press(self):
-		self.popup.dismiss()
-
-class Remove_From_TreeView(Button):
-	def __init__(self, tree_view, observer_database, **kwargs):
-		super().__init__(**kwargs)
-		self.observer_database = observer_database
-		self.tree_view = tree_view
-
-	def on_press(self):
-		tree_node = self.tree_view.selected_node
-		if tree_node != None:
-			if tree_node.text != 'Root':
-				ingredient = self.observer_database.get_node(tree_node.text)
-				self.observer_database.remove(ingredient)
-				self.observer_database.save()
-				self.observer_database.update_observers()
-
 class Screen_Button(Button):
 	def __init__(self, screen_manager, screen_name, **kwargs):
 		super().__init__(**kwargs)

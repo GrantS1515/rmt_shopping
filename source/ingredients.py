@@ -1,10 +1,10 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
-from view_database import View_Ingredient_Scaffold
+from view import View_Ingredient_Scaffold
 from kivy.uix.popup import Popup
-from general_classes import Launch_Popup, Remove_From_TreeView, Screen_Selector
-
-from add_ingredient_popup import Add_Ingredient_Layout_Scaffold
+from popup_utils import Launch_Popup, Add_Ingredient_Layout_Scaffold
+from treeview_utils import Remove_From_TreeView
+from screen_utils import Screen_Selector
 
 class Ingredients_Screen(Screen):
 	def __init__(self, ingredient_data, screenmanager, **kwargs):

@@ -5,19 +5,15 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.lang import Builder
 from kivy.uix.screenmanager import FallOutTransition
-from kivy.uix.button import Button
 
-# database imports
 from database import OD_Scaffold
 from ingredients import Ingredients_Screen
-
-
 from quantities import Quantities_Screen
 from cookbook import Cookbook_Home_Screen
-from add_recipe import Ingredients_Select_Screen, Quantity_Select_Screen, Recipe_Home_Screen
-from recipe_utils import Recipe_Manager
-
-from add_recipe import Recipe_Home_Screen
+from recipe_manager import Recipe_Manager
+from add_recipe_home import Recipe_Home_Screen
+from add_recipe_ingredients import Ingredients_Select_Screen
+from add_recipe_quantities import Quantity_Select_Screen
 
 class Shopping(ScreenManager):
 	def __init__(self, **kwargs):

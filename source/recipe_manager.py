@@ -1,6 +1,7 @@
-from database import Quantity_Ingredient, Recipe_Node
-from general_classes import Screen_Button
 from kivy.clock import Clock
+
+from node import Quantity_Ingredient, Recipe_Node
+from screen_utils import Screen_Button
 
 class Recipe_Manager():
 

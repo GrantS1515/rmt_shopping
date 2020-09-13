@@ -1,7 +1,24 @@
-from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.button import Button
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
-from database import Node
+
+from node import Node
+
+class Launch_Popup(Button):
+	def __init__(self, popup, **kwargs):
+		super().__init__(**kwargs)
+		self.popup = popup
+
+	def on_press(self):
+		self.popup.open()
+
+class Dismiss_Popup(Button):
+	def __init__(self, popup, **kwargs):
+		super().__init__(**kwargs)
+		self.popup = popup
+
+	def on_press(self):
+		self.popup.dismiss()
 
 class Add_Ingredient_Layout(RelativeLayout):
 
@@ -52,16 +69,6 @@ class Add_Ingredient_Layout_Scaffold(Add_Ingredient_Layout):
 	def _get_cancel_button(self):
 		kwargs = {'text': 'Cancel', 'size_hint': (0.3, 0.2), 'pos_hint': {'y': 0, 'x': 0}}
 		return Dismiss_Popup(self.popup, **kwargs)
-
-
-class Dismiss_Popup(Button):
-	def __init__(self, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.popup = popup
-
-	def on_press(self):
-		self.popup.dismiss()
-
 
 class Add_Ingredient_Button(Button):
 	
