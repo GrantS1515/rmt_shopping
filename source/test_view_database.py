@@ -48,7 +48,6 @@ class Temp(RelativeLayout):
 		myRecipes.add(RD2)
 
 		VC = View_Cookbook_Scaffold(myRecipes)
-		myRecipes.update_observers()
 		self.add_widget(VC)
 	
 
@@ -72,7 +71,6 @@ class Temp(RelativeLayout):
 		RD.add(onion)
 
 		VR = View_Recipe_Scaffold(RD)
-		RD.update_observers()
 
 		self.add_widget(VR)
 

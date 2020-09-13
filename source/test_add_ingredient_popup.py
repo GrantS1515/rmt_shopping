@@ -1,13 +1,15 @@
 import kivy
 kivy.require('1.9.0')
 
+
+
 from kivy.app import App
 from kivy.uix.relativelayout import RelativeLayout
-from database import OD_Scaffold
-from view_database import View_Ingredient_Scaffold
+from data.database import OD_Scaffold
+from data.view_database import View_Ingredient_Scaffold
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
-from add_ingredient_popup import Add_Ingredient_Layout_Scaffold
+from ingredient.add_ingredient_popup import Add_Ingredient_Layout_Scaffold
 
 # temp
 

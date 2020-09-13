@@ -9,16 +9,15 @@ class Quantities_Screen(Screen):
 	def __init__(self, quantities_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
 		self.name = 'Quantities_Screen'
-		self.add_widget(IngredientLayout(quantities_data, screenmanager))
+		self.add_widget(Quantities_Layout(quantities_data, screenmanager))
 
-class IngredientLayout(RelativeLayout):
+class Quantities_Layout(RelativeLayout):
 	def __init__(self, quantities_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
 
 		# setup the tree to view the database
 		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5}}
 		VD = View_Ingredient_Scaffold(quantities_data, **kwargs)
-		VD.update()
 		self.add_widget(VD)
 
 		# make the popup

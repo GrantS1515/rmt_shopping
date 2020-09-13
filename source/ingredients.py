@@ -2,8 +2,9 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
 from view_database import View_Ingredient_Scaffold
 from kivy.uix.popup import Popup
-from add_ingredient_popup import Add_Ingredient_Layout_Scaffold
 from general_classes import Launch_Popup, Remove_From_TreeView, Screen_Selector
+
+from add_ingredient_popup import Add_Ingredient_Layout_Scaffold
 
 class Ingredients_Screen(Screen):
 	def __init__(self, ingredient_data, screenmanager, **kwargs):

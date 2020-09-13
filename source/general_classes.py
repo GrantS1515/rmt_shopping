@@ -52,7 +52,7 @@ class Screen_Selector(BoxLayout):
 
 		self.quantities_screen_button =  Screen_Button(screen_manager, 'Quantities_Screen', text='Quantities Screen')
 
-		self.recipe_screen_button =  Screen_Button(screen_manager, 'Recipe_Screen', text='Recipe Screen')
+		self.recipe_screen_button =  Screen_Button(screen_manager, 'Cookbook_Home_Screen', text='Cookbook Screen')
 
 		self.add_widget(self.ingredient_screen_button)
 		self.add_widget(self.quantities_screen_button)

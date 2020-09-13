@@ -1,5 +1,6 @@
 from kivy.uix.treeview import TreeView, TreeViewLabel
 from kivy.clock import Clock
+from kivy.uix.label import Label
 
 class View_Database(TreeView):
 
@@ -30,26 +31,12 @@ class View_Ingredient_Scaffold(View_Database):
 			TV_node = TreeViewLabel(text=ingredient.__str__())
 			self.add_node(TV_node)
 
-class View_Recipe_Scaffold(View_Database):
-	# def __init__(self, recipe_data, **kwargs):
-	# 	super().__init__(recipe_data, **kwargs)
+class View_Recipe_Node(Label):
 
-	def _build_view(self, dt):
+	def __init__(self, recipe_node, **kwargs):
+		super().__init__(**kwargs)
+		self.recipe_node = recipe_node
+		# self.update()
 
-		self._build_recipe(self.data)
-
-		
-	def _build_recipe(self, recipe):
-
-		recipe_node = TreeViewLabel(text=recipe.name)
-		self.add_node(recipe_node)
-
-		for ing_quant in recipe:
-			TV_node = TreeViewLabel(text=ing_quant.__str__())
-			self.add_node(TV_node, recipe_node)
-
-class View_Cookbook_Scaffold(View_Recipe_Scaffold):
-
-	def _build_view(self, dt):
-		for recipe in self.data:
-			self._build_recipe(recipe)
+	def update(self):
+		self.text = self.recipe_node.__str__()

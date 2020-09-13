@@ -1,5 +1,5 @@
 import pytest
-from database import OD_Scaffold, Node, Recipe_Scaffold, Quantity_Ingredient
+from data.database import Node, OD_Scaffold, Recipe_Scaffold, Quantity_Ingredient
 import os
 
 class Observer_1():
@@ -106,7 +106,12 @@ class Test_OD_interface_1():
 
 @pytest.fixture
 def tree_2():
-	RD = Recipe_Scaffold('temp_recipe', 'Western Omlet')
+
+	filename = 'temp_recipe'
+	if os.path.exists(filename + '.data'):
+		os.remove(filename + '.data')
+
+	RD = Recipe_Scaffold(filename, 'Western Omlet')
 
 	pep = Quantity_Ingredient(1, 'number', 'pepper')
 	eggs = Quantity_Ingredient(3, 'number', 'eggs')
@@ -169,3 +174,43 @@ class Test_Recipe_Interface_1():
 
 		with pytest.raises(Exception):
 			Recipe_Scaffold(self.filename, name='wrong name')
+
+@pytest.fixture
+def tree_3():
+
+	filename = 'temp_recipe_3'
+	if os.path.exists(filename + '.data'):
+		os.remove(filename + '.data')
+
+	RD = Recipe_Scaffold(filename, 'Waffles')
+
+	eggs = Quantity_Ingredient(3, 'number', 'eggs')
+	batter = Quantity_Ingredient(12, 'oz', 'batter')
+
+	RD.add(eggs)
+	RD.add(batter)
+
+	return RD
+
+class Test_Cookbook():
+
+	filename = 'cookbook'
+
+	def test_cookbook_save_1(self, tree_2, tree_3):
+
+		if os.path.exists(self.filename + '.data'):
+			os.remove(self.filename + '.data')
+
+		cookbook = OD_Scaffold(self.filename)
+		cookbook.add(tree_2)
+		cookbook.add(tree_3)
+
+		assert cookbook.get_node('Western Omlet').name == 'Western Omlet'
+		assert cookbook.get_node('Waffles').name == 'Waffles'
+		cookbook.save()
+
+		cookbook = None
+
+		new_cookbook = OD_Scaffold(self.filename)
+		assert new_cookbook.get_node('Western Omlet').name == 'Western Omlet'
+		assert new_cookbook.get_node('Waffles').name == 'Waffles'
