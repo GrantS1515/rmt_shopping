@@ -39,12 +39,6 @@ class Recipe_Manager():
 		self.cookbook_data.add(self.recipe_node)
 		self.cookbook_data.save()
 
-		# reset
-		# self.QI_list = []
-		# self.ingredient_name = None
-		# self.quantity_type = None
-		# self.quantity = None
-
 		# update
 		self.cookbook_data.update_observers()
 
