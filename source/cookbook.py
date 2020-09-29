@@ -3,15 +3,16 @@ from kivy.uix.relativelayout import RelativeLayout
 
 from screen_utils import Screen_Selector, Screen_Button
 from view import View_Ingredient_Scaffold
+from treeview_utils import Remove_From_TreeView
 
 class Cookbook_Home_Screen(Screen):
-	def __init__(self, cookbook_data, screenmanager, **kwargs):
+	def __init__(self, cookbook_data, shopping_cookbook_data,screenmanager, **kwargs):
 		super().__init__(**kwargs)
 		self.name = 'Cookbook_Home_Screen'
-		self.add_widget(Cookbook_Home_Layout(cookbook_data, screenmanager))
+		self.add_widget(Cookbook_Home_Layout(cookbook_data, shopping_cookbook_data, screenmanager))
 
 class Cookbook_Home_Layout(RelativeLayout):
-	def __init__(self, cookbook_data, screenmanager, **kwargs):
+	def __init__(self, cookbook_data, shopping_cookbook_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
 
 		# add the view for recipes
@@ -20,11 +21,14 @@ class Cookbook_Home_Layout(RelativeLayout):
 		self.add_widget(cookbook)
 
 		# add the buttons to add a new recipe
-		kwargs = {'text': 'Add Recipe', 'size_hint': (0.3, 0.1), 'pos_hint': {'right': 1, 'y': 0}}
+		kwargs = {'text': 'Add Recipe', 'size_hint': (0.3, 0.1), 'pos_hint': {'center_x': 0.5, 'y': 0}}
 		SB = Screen_Button(screenmanager, 'Recipe_Home_Screen', **kwargs)
 		self.add_widget(SB)
 
 		# add a button to remove recipe
+		kwargs = {'text': 'Remove Recipe', 'size_hint': (0.3, 0.1), 'pos_hint': {'x': 0, 'y': 0}}
+		RB = Remove_From_TreeView(cookbook, cookbook_data, **kwargs)
+		self.add_widget(RB)
 
 		# add the button to switch main screens 
 		kwargs = {'size_hint': (1, 0.1), 'pos_hint': {'top': 1}}
@@ -33,21 +37,28 @@ class Cookbook_Home_Layout(RelativeLayout):
 		self.add_widget(selector)
 
 		# add recipe to shopping list
-		kwargs = {'text': 'Add to Shopping', 'size_hint': (0.3, 0.1), 'pos_hint': {'center_x': 0.5, 'y': 0}}
-		shopButton = Add_Shopping_Recipe_Button(screenmanager, 'Shopping_Cookbook_Screen', cookbook, **kwargs)
+		kwargs = {'text': 'To Shopping List', 'size_hint': (0.3, 0.1), 'pos_hint': {'right': 1, 'y': 0}}
+		shopButton = Add_Shopping_Recipe_Button(cookbook_data, shopping_cookbook_data, screenmanager, 'Shopping_Cookbook_Screen', cookbook, **kwargs)
 		self.add_widget(shopButton)
 
 class Add_Shopping_Recipe_Button(Screen_Button):
 
-	def __init__(self, screen_manager, screen_name, tree_view, **kwargs):
+	def __init__(self, cookbook_data, shopping_cookbook_data, screen_manager, screen_name, tree_view, **kwargs):
 		self.tree_view = tree_view
-
+		self.cookbook_data = cookbook_data
+		self.shopping_cookbook_data = shopping_cookbook_data
 		super().__init__(screen_manager, screen_name, **kwargs)
 
 	def on_press(self):
 		tree_node = self.tree_view.selected_node
 
 		if tree_node != None:
+
+			# this could be improved
+			node_name = tree_node.text.split('\n')[0]
+			node = self.cookbook_data.get_node(node_name)
+			self.shopping_cookbook_data.add(node)
+			self.shopping_cookbook_data.update_observers()
 			super().on_press()
 
 

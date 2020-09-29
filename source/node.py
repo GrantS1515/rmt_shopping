@@ -7,6 +7,10 @@ class Node():
 		if (name == None) and (json == None):
 			raise Exception('Must have data for node')
 
+		if name != None:
+			if (' ' or '\n') in name:
+				raise Exception('Name of node must be single word')
+
 		self.observers = []
 
 		if name != None:
@@ -18,8 +22,18 @@ class Node():
 	def __str__(self):
 		return self.name
 
+	@staticmethod
+	def str2name(str_value):
+
+		if '\n' in str_value:
+			return str_value.split('\n')[0]
+		elif ' ' in str_value:
+			return str_value.split(' ')[0]
+		else:
+			return str_value
+
 	def collide(self, other_node):
-		return self
+		return [self]
 
 	def update_observers(self):
 		for observer in self.observers:
@@ -43,6 +57,14 @@ class Quantity_Ingredient(Node):
 			self.quantity = quantity
 			self.quantity_type = quantity_type
 
+	def collide(self, other_node):
+
+		if (self.name == other_node.name) and (self.quantity_type == other_node.quantity_type):
+			self.quantity += other_node.quantity
+			return [self]
+		else:
+			return [self, other_node]
+
 	def json_encoder(self):
 		return {'is_QI': True,
 			'name': self.name,
@@ -56,8 +78,7 @@ class Quantity_Ingredient(Node):
 			self.quantity_type = json_data['quantity_type']
 
 	def __str__(self):
-		return str(self.quantity) + ', ' + self.quantity_type + ' of ' + self.name
-
+		return self.name + ' ' + str(self.quantity) + ' ' + self.quantity_type
 
 class Recipe_Node(Node):
 
@@ -94,3 +115,28 @@ class Recipe_Node(Node):
 			my_str += '\n'
 
 		return my_str
+
+def Node_Accumulator(nodes):
+
+	nodes_list = list(nodes)
+
+	accumulated_list = [nodes_list.pop(0)]
+	node_accumulated = False
+	for node in nodes_list:
+
+		for a_node in accumulated_list:
+
+			result = a_node.collide(node)
+
+			if len(result) == 1:
+				accumulated_list.remove(a_node)
+				accumulated_list.append(result[0])
+				node_accumulated = True
+				break
+		
+		if node_accumulated:
+			node_accumulated = False
+		else:
+			accumulated_list.append(node)
+
+	return accumulated_list

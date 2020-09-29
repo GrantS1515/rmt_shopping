@@ -2,9 +2,13 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
 from view import View_Ingredient_Scaffold
 from kivy.uix.popup import Popup
-from popup_utils import Launch_Popup, Add_Ingredient_Layout_Scaffold
+from popup_utils import Launch_Popup, PopLayoutOkCancel, Add_From_Popup, Dismiss_Popup_from_Layout
 from treeview_utils import Remove_From_TreeView
 from screen_utils import Screen_Selector
+
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from node import Node
 
 class Ingredients_Screen(Screen):
 	def __init__(self, ingredient_data, screenmanager, **kwargs):
@@ -21,14 +25,11 @@ class IngredientLayout(RelativeLayout):
 		VD = View_Ingredient_Scaffold(ingredient_data, **kwargs)
 		self.add_widget(VD)
 
-		# make the popup
-		pop_layout = Add_Ingredient_Layout_Scaffold()
-		add_pop = Popup(title='Add Ingredient', content=pop_layout, size_hint=(0.75, 0.75))
-		pop_layout.load_layout(VD, ingredient_data, add_pop)
+		myPopLayout =Add_Ingr_Layout(self, ingredient_data, Add_Ingr_Button)
+		self.popup = Popup(title='Add Ingredient', content=myPopLayout, size_hint=(0.75, 0.75))
 
-		# trigger the popup
 		kwargs = {'text': 'Add Ingredient', 'size_hint': (0.5, 0.1), 'pos_hint': {'right': 1}}
-		addButton = Launch_Popup(add_pop, **kwargs)
+		addButton = Launch_Popup(self.popup, **kwargs)
 		self.add_widget(addButton)
 
 		# remove button
@@ -42,5 +43,21 @@ class IngredientLayout(RelativeLayout):
 		selector.ingredient_screen_button.background_color = (0, 1, 0, 1)
 		self.add_widget(selector)
 
+class Add_Ingr_Layout(PopLayoutOkCancel):
 
+	def __init__(self, screen_layout, observable_data, add_from_popup, **kwargs):
+		super().__init__(screen_layout, observable_data, add_from_popup, **kwargs)
 
+		kwargs = {'text': 'Enter Value', 'size_hint': (1, 0.1), 'pos_hint': {'center_y': 0.9}}
+		self.text_input = TextInput(**kwargs)
+		self.add_widget(self.text_input)
+
+	@property
+	def data_dict(self):
+		return {'name': self.text_input.text}
+
+class Add_Ingr_Button(Add_From_Popup):
+
+	@property
+	def my_node(self):
+		return Node(name=self.pop_layout.data_dict['name'])

@@ -16,6 +16,7 @@ from add_recipe_home import Recipe_Home_Screen
 from add_recipe_ingredients import Ingredients_Select_Screen
 from add_recipe_quantities import Quantity_Select_Screen
 from shopping_cookbook import Shopping_Cookbook_Screen
+from shopping_quantity import Shopping_Quantity_Screen
 
 class Shopping(ScreenManager):
 	def __init__(self, **kwargs):
@@ -33,9 +34,9 @@ class Shopping(ScreenManager):
 		shop_cook_filename = 'shopping_cookbook.json'
 		if os.path.exists(shop_cook_filename):
 			os.remove(shop_cook_filename)
-		shop_cook_data = OD_Scaffold(shop_cook_filename)
+		shopping_cookbook_data = OD_Scaffold(shop_cook_filename)
 
-		self.add_widget(Cookbook_Home_Screen(cookbook_data, self))
+		self.add_widget(Cookbook_Home_Screen(cookbook_data, shopping_cookbook_data, self))
 
 		RM = Recipe_Manager(cookbook_data)
 
@@ -45,9 +46,14 @@ class Shopping(ScreenManager):
 
 		self.add_widget(Quantity_Select_Screen(quantities_data, self, RM))
 
-		self.add_widget(Shopping_Cookbook_Screen(self))
+		shop_quantity_filename = 'shopping_quantity.json'
+		if os.path.exists(shop_quantity_filename):
+			os.remove(shop_quantity_filename)
+		shop_quantity_data = OD_Scaffold(shop_quantity_filename)
 
+		self.add_widget(Shopping_Cookbook_Screen(shopping_cookbook_data, shop_quantity_data, self))
 
+		self.add_widget(Shopping_Quantity_Screen(shop_quantity_data, self))
 
 class ShoppingApp(App):
 

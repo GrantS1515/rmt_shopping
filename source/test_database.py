@@ -1,5 +1,6 @@
 import pytest
-from data.database import Node, OD_Scaffold, Recipe_Scaffold, Quantity_Ingredient
+from database import OD_Scaffold, Recipe_Scaffold 
+from node import Quantity_Ingredient
 import os
 
 class Observer_1():

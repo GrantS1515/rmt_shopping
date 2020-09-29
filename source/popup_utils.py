@@ -12,100 +12,50 @@ class Launch_Popup(Button):
 	def on_press(self):
 		self.popup.open()
 
-class Dismiss_Popup(Button):
-	def __init__(self, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.popup = popup
+class PopLayout(RelativeLayout):
 
-	def on_press(self):
-		self.popup.dismiss()
-
-class Add_Ingredient_Layout(RelativeLayout):
-
-	loaded = False
-
-	def __init__(self, **kwargs):
+	def __init__(self, screen_layout, observable_data, **kwargs):
 		super().__init__(**kwargs)
 
-		kwargs = {'text': 'Enter Value', 'size_hint': (1, 0.1), 'pos_hint': {'center_y': 0.9}}
-		self.text_input = TextInput(**kwargs)
-		self.add_widget(self.text_input)
-
-	def _get_add_button(self):
+	@property
+	def data_dict(self):
 		raise NotImplementedError
 
-	def _get_cancel_button(self):
-		raise NotImplementedError
+class PopLayoutOkCancel(PopLayout):
 
-	def load_layout(self, **kwargs):
-		'''
-		Call only once
-		'''
-		if self.loaded:
-			return
+	def __init__(self, screen_layout, observable_data, add_from_popup, **kwargs):
+		super().__init__(screen_layout, observable_data, **kwargs)
 
-		self.add_widget(self._get_add_button())
-		self.add_widget(self._get_cancel_button())
+		kwargs = {'text': 'Ok', 'size_hint': (0.5, 0.1), 'pos_hint': {'right': 1}}
+		okButton = add_from_popup(screen_layout, self, observable_data, **kwargs)
+		self.add_widget(okButton)
 
-		self.loaded = True
+		kwargs = {'text': 'Cancel', 'size_hint': (0.5, 0.1), 'pos_hint': {'x': 0, 'y': 0}}
+		cancelButton = Dismiss_Popup_from_Layout(screen_layout, **kwargs)
+		self.add_widget(cancelButton)
 
-class Add_Ingredient_Layout_Scaffold(Add_Ingredient_Layout):
-	
-	def __init__(self, **kwargs):
+class Add_From_Popup(Button):
+
+	def __init__(self, screen_layout, pop_layout, observable_data, **kwargs):
 		super().__init__(**kwargs)
-		
+		self.observable_data = observable_data
+		self.pop_layout = pop_layout
+		self.screen_layout = screen_layout
 
-	def load_layout(self, tree_view, ingredient_data, popup, **kwargs):
-		self.tree_view = tree_view
-		self.ingredient_data = ingredient_data
-		self.popup = popup
-
-		super().load_layout(**kwargs)
-
-	def _get_add_button(self):
-		kwargs = {'text': 'Ok', 'size_hint': (0.3, 0.2), 'pos_hint': {'y': 0, 'right': 1}}
-		return Add_Ingredient_Button_Scaffold(self.tree_view, self.ingredient_data, self.text_input, self.popup, **kwargs)
-
-	def _get_cancel_button(self):
-		kwargs = {'text': 'Cancel', 'size_hint': (0.3, 0.2), 'pos_hint': {'y': 0, 'x': 0}}
-		return Dismiss_Popup(self.popup, **kwargs)
-
-class Add_Ingredient_Button(Button):
-	
-	def __init__(self, tree_view, ingredient_data, text_input, popup, **kwargs):
-		super().__init__(**kwargs)
-		self.ingredient_data = ingredient_data
-		self.tree_view = tree_view
-		self.text_input = text_input
-		self.popup = popup
-
-	@staticmethod
-	def _process_text(text):
-		myText = text.lower()
-		return myText[0].upper() + myText[1:]
-
-	def get_node(self):
-		raise NotImplementedError
-
-	def get_kwargs_add(self):
+	@property
+	def my_node(self):
 		raise NotImplementedError
 
 	def on_press(self):
-		self.ingredient_data.add(self.get_node(), kwargs=self.get_kwargs_add())
-		self.ingredient_data.save()
-		self.ingredient_data.update_observers()
-		self.popup.dismiss()
+		self.observable_data.add(self.my_node)
+		self.observable_data.save()
+		self.screen_layout.popup.dismiss()
 
 
-class Add_Ingredient_Button_Scaffold(Add_Ingredient_Button):
-	def __init__(self, tree_view, ingredient_data, text_input,popup, **kwargs):
-		super().__init__(tree_view, ingredient_data, text_input, popup, **kwargs)
+class Dismiss_Popup_from_Layout(Button):
+	def __init__(self, screen_layout, **kwargs):
+		super().__init__(**kwargs)
+		self.screen_layout = screen_layout
 
-	def get_node(self):
-		text = self.text_input.text
-		node_name = self._process_text(text)
-
-		return Node(node_name)
-
-	def get_kwargs_add(self):
-		return {}
+	def on_press(self):
+		self.screen_layout.popup.dismiss()
