@@ -25,7 +25,7 @@ class Observable_Database(ABC):
 
 	@abstractmethod
 	def remove(self, node, **kwargs):
-		pass
+		self.update_observers()
 
 	@abstractmethod
 	def get_node(self, node_name):
@@ -73,6 +73,7 @@ class OD_Scaffold(Observable_Database):
 
 	def remove(self, node, **kwargs):
 		del self.data[node.name]
+		super().remove(node)
 
 	def get_node(self, node_name):
 		return self.data[node_name]

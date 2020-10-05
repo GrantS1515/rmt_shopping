@@ -39,9 +39,6 @@ class Recipe_Manager():
 		self.cookbook_data.add(self.recipe_node)
 		self.cookbook_data.save()
 
-		# update
-		self.cookbook_data.update_observers()
-
 class Recipe_Manager_Screen_Button(Screen_Button):
 	def __init__(self, screen_manager, screen_name, recipe_manager, **kwargs):
 		super().__init__(screen_manager, screen_name, **kwargs)

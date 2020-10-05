@@ -4,9 +4,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 
-from view import View_Ingredient_Scaffold
-from popup_utils import Launch_Popup, PopLayoutOkCancel, Add_Node_From_Popup, Remove_From_TreeView_Popup
-# from treeview_utils import Remove_From_TreeView
+from view import View_Nodes_Scroll
+from popup_utils import Launch_Popup, PopLayoutOkCancel, Add_Node_From_Popup, Remove_From_Database_Button
 from screen_utils import Screen_Selector
 from node import Node
 
@@ -24,7 +23,7 @@ class Quantities_Layout(RelativeLayout):
 
 		# setup the tree to view the database
 		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5}}
-		VD = View_Ingredient_Scaffold(quantities_data, **kwargs)
+		VD = View_Nodes_Scroll(quantities_data, **kwargs)
 		self.add_widget(VD)
 
 		popLayout = Add_Quantity_Layout(self, quantities_data, Add_Quantity_Button)
@@ -36,12 +35,7 @@ class Quantities_Layout(RelativeLayout):
 		self.add_widget(addButton)
 
 		# remove button
-		# kwargs = {'text': 'Remove Quantity', 'size_hint': (0.5, 0.1), 'pos_hint': {'x': 0, 'y': 0}}
-		# remButton = Remove_From_TreeView(VD, quantities_data, **kwargs)
-		# self.add_widget(remButton)
-
-		# remove button
-		myRemovePop = Remove_Quantity_Layout(self, VD, quantities_data, Remove_From_TreeView_Popup)
+		myRemovePop = Remove_Quantity_Layout(self, VD, quantities_data, Remove_From_Database_Button)
 		removePop =Popup(title='Remove Ingredient', content=myRemovePop, size_hint=(0.75, 0.75))
 		self.popups.append(removePop)
 
@@ -49,7 +43,7 @@ class Quantities_Layout(RelativeLayout):
 		remButton =Launch_Popup(removePop, **kwargs)
 		self.add_widget(remButton)
 
-		# # add the button to switch to recipes
+		# add the button to switch to recipes
 		kwargs = {'size_hint': (1, 0.1), 'pos_hint': {'top': 1}}
 		selector = Screen_Selector(screenmanager, **kwargs)
 		selector.quantities_screen_button.background_color = (0, 1, 0, 1)
@@ -80,14 +74,14 @@ class Add_Quantity_Button(Add_Node_From_Popup):
 
 class Remove_Quantity_Layout(PopLayoutOkCancel):
 
-	def __init__(self, screen_layout, tree_view, observer_database, remove_from_treeview_button, **kwargs):
+	def __init__(self, screen_layout, view_database, observer_database, remove_from_database_button, **kwargs):
 
 		buttonArgs = {}
 		buttonArgs['screen_layout'] = screen_layout
-		buttonArgs['tree_view'] = tree_view
+		buttonArgs['view_database'] = view_database
 		buttonArgs['observer_database'] = observer_database
 
-		super().__init__(screen_layout, remove_from_treeview_button, buttonArgs, **kwargs)
+		super().__init__(screen_layout, remove_from_database_button, buttonArgs, **kwargs)
 
 		kwargs = {'size_hint': (1, 0.9), 'pos_hint': {'top': 1}}
 		myLabel = Label(text='Delete Quantity?', **kwargs)

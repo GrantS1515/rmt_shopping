@@ -25,7 +25,7 @@ class Recipe_Home_Layout(RelativeLayout):
 		TI_recipe_name = TextInput(text='Enter Recipe Name', **kwargs)
 		self.add_widget(TI_recipe_name)
 
-		# view the curren recipe
+		# view the current recipe
 		kwargs = {'size_hint': (1, 0.7), 'pos_hint': {'center_y': 0.5}}
 		vRecipe = View_Recipe_Node(recipe_manager.recipe_node, **kwargs)
 		self.add_widget(vRecipe)

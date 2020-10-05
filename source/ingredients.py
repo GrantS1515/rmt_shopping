@@ -1,15 +1,16 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
-from view import View_Ingredient_Scaffold
+from view import View_Nodes_Scroll
 from kivy.uix.popup import Popup
-from popup_utils import Launch_Popup, PopLayoutOkCancel, Add_Node_From_Popup, Dismiss_Popup_from_Layout, Remove_From_TreeView_Popup
-# from treeview_utils import Remove_From_TreeView
+from popup_utils import Launch_Popup, PopLayoutOkCancel, Add_Node_From_Popup, Dismiss_Popup_from_Layout, Remove_From_Database_Button
 from screen_utils import Screen_Selector
 
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from node import Node
+
+from kivy.uix.widget import Widget
 
 class Ingredients_Screen(Screen):
 	def __init__(self, ingredient_data, screenmanager, **kwargs):
@@ -23,8 +24,8 @@ class IngredientLayout(RelativeLayout):
 		self.popups = []
 
 		# setup the tree to view the database
-		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5}}
-		VD = View_Ingredient_Scaffold(ingredient_data, **kwargs)
+		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5, 'center_x': 0.5}}
+		VD = View_Nodes_Scroll(ingredient_data, **kwargs)
 		self.add_widget(VD)
 
 		myPopLayout =Add_Ingr_Layout(self, ingredient_data, Add_Ingr_Button)
@@ -36,7 +37,7 @@ class IngredientLayout(RelativeLayout):
 		self.add_widget(addButton)
 
 		# remove button
-		myRemovePop = Remove_Ingr_Layout(self, VD, ingredient_data, Remove_From_TreeView_Popup)
+		myRemovePop = Remove_Ingr_Layout(self, VD, ingredient_data, Remove_From_Database_Button)
 		removePop =Popup(title='Remove Ingredient', content=myRemovePop, size_hint=(0.75, 0.75))
 		self.popups.append(removePop)
 
@@ -76,14 +77,14 @@ class Add_Ingr_Button(Add_Node_From_Popup):
 
 class Remove_Ingr_Layout(PopLayoutOkCancel):
 	
-	def __init__(self, screen_layout, tree_view, observer_database, remove_from_treeview_button, **kwargs):
+	def __init__(self, screen_layout, view_database, observer_database, remove_from_database_button, **kwargs):
 
 		buttonArgs = {}
 		buttonArgs['screen_layout'] = screen_layout
-		buttonArgs['tree_view'] = tree_view
+		buttonArgs['view_database'] = view_database
 		buttonArgs['observer_database'] = observer_database
 
-		super().__init__(screen_layout, remove_from_treeview_button, buttonArgs, **kwargs)
+		super().__init__(screen_layout, remove_from_database_button, buttonArgs, **kwargs)
 
 		kwargs = {'size_hint': (1, 0.9), 'pos_hint': {'top': 1}}
 		myLabel = Label(text='Delete Ingredient?', **kwargs)

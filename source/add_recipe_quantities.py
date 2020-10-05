@@ -3,8 +3,8 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 
 from screen_utils import Screen_Button
-from view import View_Ingredient_Scaffold
-from recipe_manager import Recipe_Manager_Screen_Button
+from view import View_Nodes_Scroll
+# from recipe_manager import Recipe_Manager_Screen_Button
 from node import Quantity_Ingredient
 
 
@@ -27,7 +27,7 @@ class Quantity_Select_Layout(RelativeLayout):
 
 		# view of the quantities list
 		kwargs = {'size_hint': (1, 0.9), 'pos_hint': {'x': 0, 'top': 0.9}}
-		VQ = View_Ingredient_Scaffold(quantitiy_data, **kwargs)
+		VQ = View_Nodes_Scroll(quantitiy_data, **kwargs)
 		self.add_widget(VQ)
 
 		# add to the recipe list
@@ -37,10 +37,10 @@ class Quantity_Select_Layout(RelativeLayout):
 
 
 class Add_Quantity(Screen_Button):
-	def __init__(self, screen_manager, screen_name, recipe_manager, quantity_TI, quantity_tree, **kwargs):
+	def __init__(self, screen_manager, screen_name, recipe_manager, quantity_TI, view_database, **kwargs):
 		super().__init__(screen_manager, screen_name, **kwargs)
 		self.quantity_TI = quantity_TI
-		self.quantity_tree = quantity_tree
+		self.view_database = view_database
 		self.recipe_manager = recipe_manager
 
 	def on_press(self):
@@ -51,8 +51,8 @@ class Add_Quantity(Screen_Button):
 		except Exception:
 			return
 
-		tree_node = self.quantity_tree.selected_node
+		tree_node = self.view_database.my_selected_node
 		if tree_node != None:
-			self.recipe_manager.quantity_type = tree_node.text
+			self.recipe_manager.quantity_type = tree_node.name
 			self.recipe_manager.add_QI()
 			super().on_press()

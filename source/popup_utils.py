@@ -3,7 +3,6 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 
 from node import Node
-from treeview_utils import Remove_From_TreeView
 
 class Launch_Popup(Button):
 	def __init__(self, popup, **kwargs):
@@ -53,15 +52,25 @@ class Add_Node_From_Popup(Button):
 		for p in self.screen_layout.popups:
 			p.dismiss()
 
-class Remove_From_TreeView_Popup(Remove_From_TreeView):
+class Remove_From_Database_Button(Button):
 
-	def __init__(self, screen_layout, tree_view, observer_database, **kwargs):
+	def __init__(self, screen_layout, view_database, observer_database, **kwargs):
 		
-		super().__init__(tree_view, observer_database, **kwargs)
+		
 		self.screen_layout = screen_layout
+		self.view_database = view_database
+		self.observer_database = observer_database
+		super().__init__(**kwargs)
 
 	def on_press(self):
-		super().on_press()
+		
+		node = self.view_database.my_selected_node 
+
+		if node != None:
+			self.observer_database.remove(node)
+			self.observer_database.save()
+			# self.observer_database.update_observers()
+
 		for p in self.screen_layout.popups:
 			p.dismiss()
 
