@@ -1,8 +1,8 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
-from view import View_Nodes_Scaffold
+from view import View_Nodes_Scroll
 from screen_utils import Screen_Button
-from node import Node_Accumulator
+from node import Node_Accumulator, Quantity_Ingredient
 
 class Shopping_Cookbook_Screen(Screen):
 	def __init__(self, shopping_cookbook_data, shop_quantity_data, screen_manager, **kwargs):
@@ -15,7 +15,7 @@ class Shopping_Cookbook_Layout(RelativeLayout):
 		super().__init__(**kwargs)
 
 		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'top': 1}}
-		recipe_view = View_Nodes_Scaffold(shopping_cookbook_data, **kwargs)
+		recipe_view = View_Nodes_Scroll(shopping_cookbook_data, **kwargs)
 		self.add_widget(recipe_view)
 
 		kwargs = {'text': 'Back To Cookbook', 'size_hint': (0.3, 0.1), 'pos_hint': {'y': 0, 'x': 0}}
@@ -36,7 +36,6 @@ class Shopping_Quantity_Button(Screen_Button):
 
 	def on_press(self):
 
-		# add in the node accumulator that reduces the QI nodes to a list of the ingredients only
 		all_QI = []
 		for recipe_node in self.shopping_cookbook_data:
 			all_QI.extend(recipe_node.QI_list)
@@ -46,7 +45,5 @@ class Shopping_Quantity_Button(Screen_Button):
 			self.shop_quantity_data.add(QI_node)
 
 		self.shop_quantity_data.update_observers()
-
-
 		super().on_press()
 		

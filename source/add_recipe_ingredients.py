@@ -15,7 +15,7 @@ class Ingredient_Select_Layout(RelativeLayout):
 		super().__init__(**kwargs)
 
 		# view all the ingredients list
-		kwargs = {'size_hint': (1, 0.4), 'pos_hint': {'x': 0, 'top': 1}}
+		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'x': 0, 'top': 1}}
 		VD = View_Nodes_Scroll(ingredient_data, **kwargs)
 		self.add_widget(VD)
 

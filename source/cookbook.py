@@ -55,6 +55,7 @@ class Add_Shopping_Recipe_Button(Screen_Button):
 
 		if node != None:
 			self.shopping_cookbook_data.add(node)
+			self.shopping_cookbook_data.update_observers()
 			super().on_press()
 
 

@@ -48,6 +48,7 @@ class Add_Node_From_Popup(Button):
 	def on_press(self):
 		self.observable_data.add(self.my_node)
 		self.observable_data.save()
+		self.observable_data.update_observers()
 		
 		for p in self.screen_layout.popups:
 			p.dismiss()
@@ -69,7 +70,7 @@ class Remove_From_Database_Button(Button):
 		if node != None:
 			self.observer_database.remove(node)
 			self.observer_database.save()
-			# self.observer_database.update_observers()
+			self.observer_database.update_observers()
 
 		for p in self.screen_layout.popups:
 			p.dismiss()

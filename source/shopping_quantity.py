@@ -14,10 +14,10 @@ class Shopping_Quantity_Layout(RelativeLayout):
 		super().__init__(**kwargs)
 
 		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'top': 1}}
+
 		recipe_view = View_Nodes_Scaffold(shopping_quantity_data, **kwargs)
 		self.add_widget(recipe_view)
 
 		kwargs = {'text': 'Back to Shopping Cookbook', 'size_hint': (0.3, 0.1), 'pos_hint': {'y': 0, 'x': 0}}
 		to_cookbook_button = Screen_Button(screen_manager, 'Shopping_Cookbook_Screen', **kwargs)
 		self.add_widget(to_cookbook_button)
-		

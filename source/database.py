@@ -69,11 +69,11 @@ class OD_Scaffold(Observable_Database):
 	
 	def add(self, node, **kwargs):
 		self.data[node.name] = node
-		super().add(node, **kwargs)
+		# super().add(node, **kwargs)
 
 	def remove(self, node, **kwargs):
 		del self.data[node.name]
-		super().remove(node)
+		# super().remove(node)
 
 	def get_node(self, node_name):
 		return self.data[node_name]
