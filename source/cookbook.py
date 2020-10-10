@@ -6,13 +6,13 @@ from view import View_Nodes_Scroll
 from popup_utils import Remove_From_Database_Button
 
 class Cookbook_Home_Screen(Screen):
-	def __init__(self, cookbook_data, shopping_cookbook_data,screenmanager, **kwargs):
+	def __init__(self, recipe_manager, cookbook_data, shopping_cookbook_data,screenmanager, **kwargs):
 		super().__init__(**kwargs)
 		self.name = 'Cookbook_Home_Screen'
-		self.add_widget(Cookbook_Home_Layout(cookbook_data, shopping_cookbook_data, screenmanager))
+		self.add_widget(Cookbook_Home_Layout(recipe_manager, cookbook_data, shopping_cookbook_data, screenmanager))
 
 class Cookbook_Home_Layout(RelativeLayout):
-	def __init__(self, cookbook_data, shopping_cookbook_data, screenmanager, **kwargs):
+	def __init__(self, recipe_manager, cookbook_data, shopping_cookbook_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
 		self.popups = []
 
@@ -23,7 +23,8 @@ class Cookbook_Home_Layout(RelativeLayout):
 
 		# add the buttons to add a new recipe
 		kwargs = {'text': 'Add Recipe', 'size_hint': (0.3, 0.1), 'pos_hint': {'center_x': 0.5, 'y': 0}}
-		SB = Screen_Button(screenmanager, 'Recipe_Home_Screen', **kwargs)
+		SB = To_Recipe_Home(recipe_manager, screenmanager, 'Recipe_Home_Screen', **kwargs)
+		# SB = Screen_Button(screenmanager, 'Recipe_Home_Screen', **kwargs)
 		self.add_widget(SB)
 
 		# add a button to remove recipe
@@ -58,4 +59,12 @@ class Add_Shopping_Recipe_Button(Screen_Button):
 			self.shopping_cookbook_data.update_observers()
 			super().on_press()
 
+class To_Recipe_Home(Screen_Button):
 
+	def __init__(self, recipe_manager, screen_manager, screen_name, **kwargs):
+		super().__init__(screen_manager, screen_name, **kwargs)
+		self.recipe_manager = recipe_manager
+
+	def on_press(self):
+		self.recipe_manager._reset_()
+		super().on_press()

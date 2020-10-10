@@ -7,10 +7,6 @@ class Node():
 		if (name == None) and (json == None):
 			raise Exception('Must have data for node')
 
-		if name != None:
-			if (' ' or '\n') in name:
-				raise Exception('Name of node must be single word')
-
 		self.observers = []
 
 		if name != None:
@@ -21,16 +17,6 @@ class Node():
 
 	def __str__(self):
 		return self.name
-
-	@staticmethod
-	def str2name(str_value):
-
-		if '\n' in str_value:
-			return str_value.split('\n')[0]
-		elif ' ' in str_value:
-			return str_value.split(' ')[0]
-		else:
-			return str_value
 
 	def collide(self, other_node):
 		return [self]

@@ -7,7 +7,7 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import FallOutTransition
 import os 
 
-from database import OD_Scaffold
+from database import OD_Scaffold, is_consistent_ingredient_OD_recipe_node, is_consistent_quantity_type_OD_recipe_node
 from ingredients import Ingredients_Screen
 from quantities import Quantities_Screen
 from cookbook import Cookbook_Home_Screen
@@ -31,14 +31,17 @@ class Shopping(ScreenManager):
 
 		cookbook_data = OD_Scaffold('cookbook.json')
 
+		cookbook_data.attach_core(ingredient_data, is_consistent_ingredient_OD_recipe_node)
+		cookbook_data.attach_core(quantities_data, is_consistent_quantity_type_OD_recipe_node)
+
 		shop_cook_filename = 'shopping_cookbook.json'
 		if os.path.exists(shop_cook_filename):
 			os.remove(shop_cook_filename)
 		shopping_cookbook_data = OD_Scaffold(shop_cook_filename)
 
-		self.add_widget(Cookbook_Home_Screen(cookbook_data, shopping_cookbook_data, self))
-
 		RM = Recipe_Manager(cookbook_data)
+
+		self.add_widget(Cookbook_Home_Screen(RM, cookbook_data, shopping_cookbook_data, self))
 
 		self.add_widget(Recipe_Home_Screen(self, RM))
 

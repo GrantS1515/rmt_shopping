@@ -1,7 +1,8 @@
 import pytest
-from database import OD_Scaffold, Recipe_Scaffold 
-from node import Quantity_Ingredient
+from database import OD_Scaffold 
+from node import Node, Quantity_Ingredient, Recipe_Node
 import os
+from node import Node
 
 class Observer_1():
 
@@ -105,113 +106,105 @@ class Test_OD_interface_1():
 		assert self.OD.get_node('fruit').name == 'fruit'
 		assert self.OD.get_node('dessert').name == 'dessert'
 
-@pytest.fixture
-def tree_2():
-
-	filename = 'temp_recipe'
-	if os.path.exists(filename + '.data'):
-		os.remove(filename + '.data')
-
-	RD = Recipe_Scaffold(filename, 'Western Omlet')
-
-	pep = Quantity_Ingredient(1, 'number', 'pepper')
-	eggs = Quantity_Ingredient(3, 'number', 'eggs')
-	onion = Quantity_Ingredient(0.5, 'number', 'onion')
-
-	RD.add(pep)
-	RD.add(eggs)
-	RD.add(onion)
-
-	return RD
-
-class Test_Recipe_Interface_1():
-
-	filename = 'temp_recipe'
-
-	def test_init_1(self):
-
-		if os.path.exists(self.filename + '.data'):
-			os.remove(self.filename + '.data')
-
-		# for a new file must call an exception without a name for recipe
-		with pytest.raises(Exception):
-			Recipe_Scaffold(self.filename)
-
-		# should not throw exception
-		Recipe_Scaffold(self.filename, 'temp')
-
-	def test_save_1(self, tree_2):
-		if os.path.exists(self.filename + '.data'):
-			os.remove(self.filename + '.data')
-
-		assert tree_2.get_node('pepper').name == 'pepper'
-		assert tree_2.get_node('pepper').quantity == 1
-		assert tree_2.get_node('eggs').name == 'eggs'
-		assert tree_2.get_node('eggs').quantity == 3
-		assert tree_2.get_node('onion').name == 'onion'
-		assert tree_2.get_node('onion').quantity == 0.5
-
-		tree_2.save()
-		tree_2 = None
-
-		new_tree = Recipe_Scaffold(self.filename)
-
-		assert new_tree.get_node('pepper').name == 'pepper'
-		assert new_tree.get_node('pepper').quantity == 1
-		assert new_tree.get_node('eggs').name == 'eggs'
-		assert new_tree.get_node('eggs').quantity == 3
-		assert new_tree.get_node('onion').name == 'onion'
-		assert new_tree.get_node('onion').quantity == 0.5
-
-	def test_init_2(self):
-
-		# check to make sure no name if file already exists
-		if os.path.exists(self.filename + '.data'):
-			os.remove(self.filename + '.data')
+from database import is_consistent_nodeOD_node, is_consistent_ingredient_OD_recipe_node
+def test_update_1():
 
 
-		RD = Recipe_Scaffold(self.filename, 'Western Omlet')
-		RD.save()
+	core_name = 'temp_core.json'
+	if os.path.exists(core_name):
+		os.remove(core_name)
+	core_data = OD_Scaffold(core_name)
 
-		with pytest.raises(Exception):
-			Recipe_Scaffold(self.filename, name='wrong name')
+	obs_name = 'temp_observer.json'
+	if os.path.exists(obs_name):
+		os.remove(obs_name)
+	obs_data = OD_Scaffold(obs_name)
 
-@pytest.fixture
-def tree_3():
 
-	filename = 'temp_recipe_3'
-	if os.path.exists(filename + '.data'):
-		os.remove(filename + '.data')
+	ing1 = Node('ing1')
+	ing2 = Node('ing2')
+	core_data.add(ing1)
+	core_data.add(ing2)
 
-	RD = Recipe_Scaffold(filename, 'Waffles')
+	QI1 = Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing1')
+	QI2 = Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing2')
+	
+	R1 = Recipe_Node(name='R1')
+	R1.QI_list.append(QI1)
 
-	eggs = Quantity_Ingredient(3, 'number', 'eggs')
-	batter = Quantity_Ingredient(12, 'oz', 'batter')
+	R12 = Recipe_Node(name='R12')
+	R12.QI_list.append(QI1)
+	R12.QI_list.append(QI2)
 
-	RD.add(eggs)
-	RD.add(batter)
+	R2 = Recipe_Node(name='R2')
+	R2.QI_list.append(QI2)
 
-	return RD
+	obs_data.add(R1)
+	obs_data.add(R12)
+	obs_data.add(R2)
 
-class Test_Cookbook():
+	assert R1 in obs_data
+	assert R12 in obs_data
+	assert R2 in obs_data
 
-	filename = 'cookbook'
+	obs_data.attach_core(core_data, is_consistent_ingredient_OD_recipe_node)
+	core_data.remove(ing1)
+	core_data.update_observers()
 
-	def test_cookbook_save_1(self, tree_2, tree_3):
+	assert R1 not in obs_data
+	assert R12 not in obs_data
+	assert R2 in obs_data
 
-		if os.path.exists(self.filename + '.data'):
-			os.remove(self.filename + '.data')
 
-		cookbook = OD_Scaffold(self.filename)
-		cookbook.add(tree_2)
-		cookbook.add(tree_3)
+	core_name = 'temp_core.json'
+	if os.path.exists(core_name):
+		os.remove(core_name)
 
-		assert cookbook.get_node('Western Omlet').name == 'Western Omlet'
-		assert cookbook.get_node('Waffles').name == 'Waffles'
-		cookbook.save()
+	obs_name = 'temp_observer.json'
+	if os.path.exists(obs_name):
+		os.remove(obs_name)
 
-		cookbook = None
+def test_update_2():
 
-		new_cookbook = OD_Scaffold(self.filename)
-		assert new_cookbook.get_node('Western Omlet').name == 'Western Omlet'
-		assert new_cookbook.get_node('Waffles').name == 'Waffles'
+	core_name = 'temp_core.json'
+	if os.path.exists(core_name):
+		os.remove(core_name)
+	core_data = OD_Scaffold(core_name)
+
+	obs_name = 'temp_observer.json'
+	if os.path.exists(obs_name):
+		os.remove(obs_name)
+	obs_data = OD_Scaffold(obs_name)
+
+
+	ing1 = Node('ing1')
+	ing2 = Node('ing2')
+	ing3 = Node('ing3')
+	core_data.add(ing1)
+	core_data.add(ing2)
+	core_data.add(ing3)
+
+	obs_data.add(ing1)
+	obs_data.add(ing2)
+	obs_data.add(ing3)	
+
+	assert ing1 in obs_data
+	assert ing2 in obs_data
+	assert ing3 in obs_data
+
+	obs_data.attach_core(core_data, is_consistent_nodeOD_node)
+	core_data.remove(ing1)
+	core_data.update_observers()
+
+	assert ing1 not in obs_data
+	assert ing2 in obs_data
+	assert ing3 in obs_data
+
+
+	core_name = 'temp_core.json'
+	if os.path.exists(core_name):
+		os.remove(core_name)
+
+	obs_name = 'temp_observer.json'
+	if os.path.exists(obs_name):
+		os.remove(obs_name)

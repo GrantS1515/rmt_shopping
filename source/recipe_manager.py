@@ -7,11 +7,21 @@ class Recipe_Manager():
 
 	def __init__(self, cookbook_data):
 		self.cookbook_data = cookbook_data
+		self.recipe_node = Recipe_Node(name='')
+		self._reset_()
+		
+	def _reset_(self):
 		self.ingredient_name = None
 		self.quantity_type = None
 		self.quantity = None
 		self.QI_list = []
-		self.recipe_node = Recipe_Node(name='')
+
+		self.recipe_node.name = ''
+		self.recipe_node.quantity_type = self.quantity_type
+		self.recipe_node.quantity = self.quantity
+		self.recipe_node.QI_list = self.QI_list
+		self.recipe_node.update_observers()
+		
 
 	@property
 	def recipe_name(self):
@@ -33,10 +43,13 @@ class Recipe_Manager():
 		
 	def add_recipe(self):
 
-		if self.recipe_node.name == None:
+		if (self.recipe_node.name == None) or (self.recipe_node.name == ''):
 			return
 
-		self.cookbook_data.add(self.recipe_node)
+		new_node = Recipe_Node(name=self.recipe_node.name)
+		new_node.QI_list = self.recipe_node.QI_list.copy()
+
+		self.cookbook_data.add(new_node)
 		self.cookbook_data.save()
 		self.cookbook_data.update_observers()
 
