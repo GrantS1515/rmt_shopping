@@ -1,65 +1,54 @@
-# from database import Node, OD_Scaffold, Quantity_Ingredient, Recipe_Node
-# import json
+import kivy
+kivy.require('1.9.0')
 
-# class Contact():
+from kivy.app import App
+from kivy.uix.screenmanager import Screen
 
-# 	def __init__(self, first, last):
-# 		self.first = first
-# 		self.last = last
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.button import Button
+from kivy.uix.scrollview import ScrollView
 
-# 	@property
-# 	def full_name(self):
-# 		return '{} {}'.format(self.first, self.last)
+class Temp(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-# 	def json_encoder(self):
-# 		return Contact_Encoder
+        layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
+        # Make sure the height is such that there is something to scroll.
+        layout.bind(minimum_height=layout.setter('height'))
+
+        for i in range(100):
+            kwargs = {}
+            my_custom = myLayout(**kwargs)
+            layout.add_widget(my_custom)
+
+        root = ScrollView(size_hint=(1, 0.8), pos_hint={'top': 1})
+        root.add_widget(layout)
+
+        self.add_widget(root)
 
 
-# # print(json.dumps(c.__dict__))
+class myLayout(RelativeLayout):
 
-# class Contact_Encoder(json.JSONEncoder):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-# 	def default(self, obj):
-# 		if isinstance(obj, Contact):
-# 			return {'is_contact': True, 
-# 			'first': obj.first,
-# 			'last': obj.last,
-# 			'full': obj.full_name}
+        self.size_hint_y = None
+        self.height = 40
 
-# 		return super().default(obj)
+        left_btn = Button(text='left', size_hint=(0.5, 1), pos_hint={'x': 0, 'y': 0})
+        right_btn = Button(text='right', size_hint=(0.5, 1), pos_hint={'right': 1, 'y': 0})
+        self.add_widget(left_btn)
+        self.add_widget(right_btn)
 
-# # c = Contact('John', 'Smith')
-# # print(json.dumps(c, cls=c.json_encoder()))
 
-# # N1 = Node('N1')
-# # N2 = Node('N2')
-# # QI1 = Quantity_Ingredient(name='QI1', quantity_type='packages', quantity=5)
-# # QI2 = Quantity_Ingredient(name='QI2', quantity_type='cups', quantity=7)
-# # R1 = Recipe_Node('R1', [QI1, QI2])
+class TempApp(App):
 
-# # OD1 = OD_Scaffold('temp.json')
-# # OD1.add(N1)
-# # OD1.add(N2)
-# # OD1.add(R1)
-# # OD1.save()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-# OD2 = OD_Scaffold('temp.json')
-# print(OD2.data)
-# # 
-# # for i in OD2:
-# # 	print(i)
+    def build(self):
+        return Temp()
 
-# # json_out = json.dumps(N1, cls=N1.json_encoder())
-
-# # json_in = json.loads(json_out)
-# # # print(json_in)
-
-# # N3 = Node(json_data=json_in)
-# # print(N3)
-
-def func(arg1, arg2, arg3, **kwargs):
-	pass
-
-myargs = {'arg1': 1, 'arg2': 2, 'arg3': 3}
-kwargs = {'a': 1}
-func(**myargs, **kwargs)
+if __name__ == '__main__':
+    TempApp().run()
