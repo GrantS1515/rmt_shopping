@@ -2,8 +2,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 
-from recipe_manager import Recipe_Manager_Screen_Button
-from view import View_Recipe_Node
+import add_recipe.recipe_manager as rm
+import database.view as view
 
 class Recipe_Home_Screen(Screen):
 	def __init__(self, screen_manager, recipe_manager, **kwargs):
@@ -27,7 +27,7 @@ class Recipe_Home_Layout(RelativeLayout):
 
 		# view the current recipe
 		kwargs = {'size_hint': (1, 0.7), 'pos_hint': {'center_y': 0.5}}
-		vRecipe = View_Recipe_Node(recipe_manager.recipe_node, **kwargs)
+		vRecipe = view.View_Recipe_Node(recipe_manager.recipe_node, **kwargs)
 		self.add_widget(vRecipe)
 
 		# ingredients button
@@ -35,7 +35,7 @@ class Recipe_Home_Layout(RelativeLayout):
 		MIB = Modify_Ingredients_Button(screen_manager, 'Add_Recipe_Ingredients_Screen', recipe_manager, TI_recipe_name, **kwargs)
 		self.add_widget(MIB)
 
-class Cookbook_Home_Button(Recipe_Manager_Screen_Button):
+class Cookbook_Home_Button(rm.Recipe_Manager_Screen_Button):
 	
 	def __init__(self, screen_manager, screen_name, recipe_manager, **kwargs):
 		super().__init__(screen_manager, screen_name, recipe_manager, **kwargs)
@@ -43,7 +43,7 @@ class Cookbook_Home_Button(Recipe_Manager_Screen_Button):
 	def manager_action(self):
 		self.recipe_manager.add_recipe()
 
-class Modify_Ingredients_Button(Recipe_Manager_Screen_Button):
+class Modify_Ingredients_Button(rm.Recipe_Manager_Screen_Button):
 	def __init__(self, screen_manager, screen_name, recipe_manager, text_input, **kwargs):
 		super().__init__(screen_manager, screen_name, recipe_manager, **kwargs)
 		self.text_input = text_input

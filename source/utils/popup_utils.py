@@ -2,8 +2,6 @@ from kivy.uix.button import Button
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 
-from node import Node
-
 class Launch_Popup(Button):
 	def __init__(self, popup, **kwargs):
 		super().__init__(**kwargs)

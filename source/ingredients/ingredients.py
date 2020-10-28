@@ -4,54 +4,54 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 
-from view import View_Nodes_Scroll
-from popup_utils import Launch_Popup, PopLayoutOkCancel, Add_Node_From_Popup, Remove_From_Database_Button
-from screen_utils import Screen_Selector
-from node import Node
+import database.view as view
+import database.node as nd
+import utils.popup_utils as pu
+import utils.screen_utils as su
 
-class Quantities_Screen(Screen):
-	def __init__(self, quantities_data, screenmanager, **kwargs):
+class Ingredients_Screen(Screen):
+	def __init__(self, ingredient_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
-		self.name = 'Quantities_Screen'
-		self.add_widget(Quantities_Layout(quantities_data, screenmanager))
+		self.name = 'Ingredients_Screen'
+		self.add_widget(IngredientLayout(ingredient_data, screenmanager))
 
-class Quantities_Layout(RelativeLayout):
-	def __init__(self, quantities_data, screenmanager, **kwargs):
+class IngredientLayout(RelativeLayout):
+	def __init__(self, ingredient_data, screenmanager, **kwargs):
 		super().__init__(**kwargs)
-
 		self.popups = []
 
 		# setup the tree to view the database
-		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5}}
-		VD = View_Nodes_Scroll(quantities_data, **kwargs)
+		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'center_y': 0.5, 'center_x': 0.5}}
+		VD = view.View_Nodes_Scroll(ingredient_data, **kwargs)
 		self.add_widget(VD)
 
-		popLayout = Add_Quantity_Layout(self, quantities_data, Add_Quantity_Button)
-		myAddPop = Popup(title='Add Quantity', content=popLayout, size_hint=(0.75, 0.75))
-		self.popups.append(myAddPop)
+		myPopLayout =Add_Ingr_Layout(self, ingredient_data, Add_Ingr_Button)
+		add_popup = Popup(title='Add Ingredient', content=myPopLayout, size_hint=(0.75, 0.75))
+		self.popups.append(add_popup)
 
-		kwargs = {'text': 'Add Quantity', 'size_hint': (0.5, 0.1), 'pos_hint': {'right': 1}}
-		addButton = Launch_Popup(myAddPop, **kwargs)
+		kwargs = {'text': 'Add Ingredient', 'size_hint': (0.5, 0.1), 'pos_hint': {'right': 1}}
+		addButton = pu.Launch_Popup(add_popup, **kwargs)
 		self.add_widget(addButton)
 
 		# remove button
-		myRemovePop = Remove_Quantity_Layout(self, VD, quantities_data, Remove_From_Database_Button)
+		myRemovePop = Remove_Ingr_Layout(self, VD, ingredient_data, pu.Remove_From_Database_Button)
 		removePop =Popup(title='Remove Ingredient', content=myRemovePop, size_hint=(0.75, 0.75))
 		self.popups.append(removePop)
 
 		kwargs = {'text': 'Remove Ingredient', 'size_hint': (0.5, 0.1), 'pos_hint': {'x': 0, 'y': 0}}
-		remButton =Launch_Popup(removePop, **kwargs)
+		remButton = pu.Launch_Popup(removePop, **kwargs)
 		self.add_widget(remButton)
 
 		# add the button to switch to recipes
 		kwargs = {'size_hint': (1, 0.1), 'pos_hint': {'top': 1}}
-		selector = Screen_Selector(screenmanager, **kwargs)
-		selector.quantities_screen_button.background_color = (0, 1, 0, 1)
+		selector = su.Screen_Selector(screenmanager, **kwargs)
+		selector.ingredient_screen_button.background_color = (0, 1, 0, 1)
 		self.add_widget(selector)
 
+class Add_Ingr_Layout(pu.PopLayoutOkCancel):
 
-class Add_Quantity_Layout(PopLayoutOkCancel):
 	def __init__(self, screen_layout, observable_data, add_from_popup, **kwargs):
+
 		buttonArgs = {}
 		buttonArgs['observable_data'] = observable_data
 		buttonArgs['screen_layout'] = screen_layout
@@ -66,14 +66,14 @@ class Add_Quantity_Layout(PopLayoutOkCancel):
 	def data_dict(self):
 		return {'name': self.text_input.text}
 
-class Add_Quantity_Button(Add_Node_From_Popup):
+class Add_Ingr_Button(pu.Add_Node_From_Popup):
 
 	@property
 	def my_node(self):
-		return Node(name=self.pop_layout.data_dict['name'])
+		return nd.Node(name=self.pop_layout.data_dict['name'])
 
-class Remove_Quantity_Layout(PopLayoutOkCancel):
-
+class Remove_Ingr_Layout(pu.PopLayoutOkCancel):
+	
 	def __init__(self, screen_layout, view_database, observer_database, remove_from_database_button, **kwargs):
 
 		buttonArgs = {}
@@ -84,5 +84,5 @@ class Remove_Quantity_Layout(PopLayoutOkCancel):
 		super().__init__(screen_layout, remove_from_database_button, buttonArgs, **kwargs)
 
 		kwargs = {'size_hint': (1, 0.9), 'pos_hint': {'top': 1}}
-		myLabel = Label(text='Delete Quantity?', **kwargs)
+		myLabel = Label(text='Delete Ingredient?', **kwargs)
 		self.add_widget(myLabel)

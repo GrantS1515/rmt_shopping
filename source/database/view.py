@@ -103,9 +103,6 @@ class View_Recipe_Node(Label):
     def update(self):
         self.text = self.recipe_node.__str__()
 
-
-from node import Node
-from itertools import compress 
 class View_Nodes_Modify_Quantity(View_Database):
     
     def __init__(self, data, **kwargs):

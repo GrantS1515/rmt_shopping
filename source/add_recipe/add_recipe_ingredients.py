@@ -1,8 +1,8 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.relativelayout import RelativeLayout
 
-from screen_utils import Screen_Button
-from view import View_Nodes_Scroll
+import utils.screen_utils as su
+import database.view as view
 
 class Ingredients_Select_Screen(Screen):
 	def __init__(self, ingredient_data, screen_manager, recipe_manager, **kwargs):
@@ -16,7 +16,7 @@ class Ingredient_Select_Layout(RelativeLayout):
 
 		# view all the ingredients list
 		kwargs = {'size_hint': (1, 0.8), 'pos_hint': {'x': 0, 'top': 1}}
-		VD = View_Nodes_Scroll(ingredient_data, **kwargs)
+		VD = view.View_Nodes_Scroll(ingredient_data, **kwargs)
 		self.add_widget(VD)
 
 		kwargs = {'text': 'Add Ingredient', 'size_hint': (0.5, 0.1), 'pos_hint': {'right': 1, 'y': 0}}
@@ -24,7 +24,7 @@ class Ingredient_Select_Layout(RelativeLayout):
 		self.add_widget(addButton)
 
 
-class Add_Ingredient_Button(Screen_Button):
+class Add_Ingredient_Button(su.Screen_Button):
 
 	def __init__(self, screen_manager, screen_name, recipe_manager, view_database, **kwargs):
 		self.view_database = view_database

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod, abstractproperty
 import os
 import json
-from node import Node, Quantity_Ingredient, Recipe_Node
+import database.node as nd
 
 class Observable_Database(ABC):
 
@@ -80,11 +80,11 @@ class OD_Scaffold(Observable_Database):
 				curr_node = None
 
 				if v.get('is_node', False):
-					curr_node = Node(json_data=v)
+					curr_node = nd.Node(json_data=v)
 				elif v.get('is_QI', False):
-					curr_node = Quantity_Ingredient(json_data=v)
+					curr_node = nd.Quantity_Ingredient(json_data=v)
 				elif v.get('is_recipe', False):
-					curr_node = Recipe_Node(json_data=v)
+					curr_node = nd.Recipe_Node(json_data=v)
 
 
 				if curr_node != None:

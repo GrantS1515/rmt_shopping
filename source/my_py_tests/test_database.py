@@ -1,8 +1,9 @@
+import sys, os
+sys.path.insert(0, os.path.abspath('..'))
 import pytest
-from database import OD_Scaffold 
-from node import Node, Quantity_Ingredient, Recipe_Node
-import os
-from node import Node
+import database.database as db
+import database.node as nd
+
 
 class Observer_1():
 
@@ -22,11 +23,11 @@ class Observer_2():
 @pytest.fixture
 def tree_1():
 
-	OD = OD_Scaffold('temp')
+	OD = db.OD_Scaffold('temp')
 
-	fruit_node = Node('fruit')
-	dessert_node = Node('dessert')
-	meat_node = Node('meat')
+	fruit_node = nd.Node('fruit')
+	dessert_node = nd.Node('dessert')
+	meat_node = nd.Node('meat')
 
 
 	OD.add(fruit_node)
@@ -38,8 +39,8 @@ def tree_1():
 class Test_OD_interface_1():
 
 	filename = 'temp'
-	OD = OD_Scaffold('temp')
-	OD_type = OD_Scaffold
+	OD = db.OD_Scaffold('temp')
+	OD_type = db.OD_Scaffold
 
 	def test_update_1(self):
 
@@ -55,8 +56,8 @@ class Test_OD_interface_1():
 
 	def test_add_1(self):
 		
-		fruit_node = Node('fruit')
-		dessert_node = Node('dessert')
+		fruit_node = nd.Node('fruit')
+		dessert_node = nd.Node('dessert')
 
 		self.OD.add(fruit_node)
 		self.OD.add(dessert_node)
@@ -86,8 +87,8 @@ class Test_OD_interface_1():
 
 	def test_save_1(self):
 
-		fruit_node = Node('fruit')
-		dessert_node = Node('dessert')
+		fruit_node = nd.Node('fruit')
+		dessert_node = nd.Node('dessert')
 		self.OD.add(fruit_node)
 		self.OD.add(dessert_node)
 
@@ -106,37 +107,36 @@ class Test_OD_interface_1():
 		assert self.OD.get_node('fruit').name == 'fruit'
 		assert self.OD.get_node('dessert').name == 'dessert'
 
-from database import is_consistent_nodeOD_node, is_consistent_ingredient_OD_recipe_node
 def test_update_1():
 
 
 	core_name = 'temp_core.json'
 	if os.path.exists(core_name):
 		os.remove(core_name)
-	core_data = OD_Scaffold(core_name)
+	core_data = db.OD_Scaffold(core_name)
 
 	obs_name = 'temp_observer.json'
 	if os.path.exists(obs_name):
 		os.remove(obs_name)
-	obs_data = OD_Scaffold(obs_name)
+	obs_data = db.OD_Scaffold(obs_name)
 
 
-	ing1 = Node('ing1')
-	ing2 = Node('ing2')
+	ing1 = nd.Node('ing1')
+	ing2 = nd.Node('ing2')
 	core_data.add(ing1)
 	core_data.add(ing2)
 
-	QI1 = Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing1')
-	QI2 = Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing2')
+	QI1 = nd.Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing1')
+	QI2 = nd.Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing2')
 	
-	R1 = Recipe_Node(name='R1')
+	R1 = nd.Recipe_Node(name='R1')
 	R1.QI_list.append(QI1)
 
-	R12 = Recipe_Node(name='R12')
+	R12 = nd.Recipe_Node(name='R12')
 	R12.QI_list.append(QI1)
 	R12.QI_list.append(QI2)
 
-	R2 = Recipe_Node(name='R2')
+	R2 = nd.Recipe_Node(name='R2')
 	R2.QI_list.append(QI2)
 
 	obs_data.add(R1)
@@ -147,7 +147,7 @@ def test_update_1():
 	assert R12 in obs_data
 	assert R2 in obs_data
 
-	obs_data.attach_core(core_data, is_consistent_ingredient_OD_recipe_node)
+	obs_data.attach_core(core_data, db.is_consistent_ingredient_OD_recipe_node)
 	core_data.remove(ing1)
 	core_data.update_observers()
 
@@ -169,17 +169,17 @@ def test_update_2():
 	core_name = 'temp_core.json'
 	if os.path.exists(core_name):
 		os.remove(core_name)
-	core_data = OD_Scaffold(core_name)
+	core_data = db.OD_Scaffold(core_name)
 
 	obs_name = 'temp_observer.json'
 	if os.path.exists(obs_name):
 		os.remove(obs_name)
-	obs_data = OD_Scaffold(obs_name)
+	obs_data = db.OD_Scaffold(obs_name)
 
 
-	ing1 = Node('ing1')
-	ing2 = Node('ing2')
-	ing3 = Node('ing3')
+	ing1 = nd.Node('ing1')
+	ing2 = nd.Node('ing2')
+	ing3 = nd.Node('ing3')
 	core_data.add(ing1)
 	core_data.add(ing2)
 	core_data.add(ing3)
@@ -192,7 +192,7 @@ def test_update_2():
 	assert ing2 in obs_data
 	assert ing3 in obs_data
 
-	obs_data.attach_core(core_data, is_consistent_nodeOD_node)
+	obs_data.attach_core(core_data, db.is_consistent_nodeOD_node)
 	core_data.remove(ing1)
 	core_data.update_observers()
 
