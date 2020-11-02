@@ -23,7 +23,7 @@ class Node():
 
 	def update_observers(self):
 		for observer in self.observers:
-			observer.update()
+			observer.update(self)
 
 	def json_encoder(self):
 		return {'is_node': True, 

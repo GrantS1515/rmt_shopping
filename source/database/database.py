@@ -12,6 +12,8 @@ class Observable_Database(ABC):
 		self.observers = []
 		self.filename = filename
 		self._load_file()
+		self.coreid2core_func = {}
+		self.coreid2self_func = {}
 
 	@abstractmethod
 	def save(self):
@@ -37,37 +39,31 @@ class Observable_Database(ABC):
 	def __iter__(self):
 		pass
 
-	@abstractmethod
-	def collide(self, other_database, update_key):
-		pass
+	def attach_core(self, core, process_core=None, process_self=None):
+		core.observers.append(self)
+		self.coreid2core_func[id(core)] = process_core
+		self.coreid2self_func[id(core)] = process_self
 
 	def update_observers(self):
 		for observer in self.observers:
-			observer.update()
+			observer.update(self)
 
-	@abstractproperty
-	def data_name_set(self):
+	def update(self, core):
+		'''Called when core updates this database
+		'''
 		pass
 
-	@abstractmethod
-	def attach_core(self, core_database, update_key):
-		'''Update this database with changes from core_database.
 
-		args:
-			core_database: type observable database
-			update_key: str that indexes the node's node_name_dict
-		'''
+
 
 class OD_Scaffold(Observable_Database):
 
 	def __init__(self, filename, **kwargs):
 		'''
 		args:
-			core_databases: list of databases from which to update the data stored in this list
+			process_core_func: a static function taking database, node and returns bool if node is consistent with databases
 		'''
-
 		self.data = {}
-		self.core_databases = {}
 
 		super().__init__(filename, **kwargs)
 
@@ -108,59 +104,20 @@ class OD_Scaffold(Observable_Database):
 	def get_node(self, node_name):
 		return self.data[node_name]
 
-	def update(self):
-		'''Given the list of core databases update this databases data
+	def update(self, core):
+		'''Update this database with another database
 		'''
-		for OD, is_consistent_func in self.core_databases.values():
-			self.collide(OD, is_consistent_func)
+		process_core = self.coreid2core_func[id(core)]
+		core_name_set = process_core(core)
+		process_self = self.coreid2self_func[id(core)]
 
-		self.update_observers()
-		self.save()
-
-	def attach_core(self, core_database, is_consistent_func):
-		self.core_databases[core_database.filename] = (core_database, is_consistent_func)
-		core_database.observers.append(self)
-
-	def collide(self, other_database, is_consistent_func):
-		'''Return the names of nodes with a name set in this database but not the other_database
-		'''
 		for node in tuple(self.data.values()):
 
-			if not is_consistent_func(other_database, node):
+			if not process_self(node).issubset(core_name_set):
 				self.remove(node)
 
-	@property
-	def data_name_set(self):
-		name_set = set()
-		for node in self.data.values():
-
-			for node_name_set in node.node_name_dict.values():
-				name_set |= node_name_set
-
-		return name_set
+		self.update_observers()
+		self.save()		
 
 	def __iter__(self):
 		return self.data.values().__iter__()
-
-def is_consistent_nodeOD_node(database, node):
-
-	OD_name_set = set()
-	OD_name_set |= set([i.name for i in database])
-
-	return {node.name}.issubset(OD_name_set)
-
-def is_consistent_ingredient_OD_recipe_node(ingredient_database, recipe_node):
-
-	OD_name_set = set()
-	OD_name_set |= set([i.name for i in ingredient_database])
-	recipe_node_ingredients = set([i.name for i in recipe_node.QI_list])
-
-	return recipe_node_ingredients.issubset(OD_name_set)
-
-def is_consistent_quantity_type_OD_recipe_node(quantity_type_database, recipe_node):
-
-	OD_name_set = set()
-	OD_name_set |= set([i.name for i in quantity_type_database])
-	recipe_node_ingredients = set([i.quantity_type for i in recipe_node.QI_list])
-
-	return recipe_node_ingredients.issubset(OD_name_set)

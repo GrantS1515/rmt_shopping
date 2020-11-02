@@ -19,7 +19,7 @@ class View_Database(RelativeLayout):
     def my_selected_node(self):
         raise NotImplementedError
 
-    def update(self):
+    def update(self, core):
         raise NotImplementedError
 
 class Viewable_TreeView(TreeView):
@@ -51,7 +51,7 @@ class Viewable_TreeView(TreeView):
         else:
             return self._nodestr2node[tree_node.text]
 
-    def update(self):
+    def update(self, core):
         self._clear_view()
         Clock.schedule_once(self._build_view, 0.1)
 
@@ -66,7 +66,7 @@ class View_Nodes_Scaffold(View_Database):
     def my_selected_node(self):
         return self.TV.my_selected_node
 
-    def update(self):
+    def update(self, core):
         self.TV.update()
 
 class View_Nodes_Scroll(View_Database):
@@ -77,7 +77,6 @@ class View_Nodes_Scroll(View_Database):
         kwargs['bar_width'] = 10
         SV = ScrollView(**kwargs)
         
-
         kwargs = {'size_hint': (kwargs['size_hint'][0], None)}
         self.TV = Viewable_TreeView(data, **kwargs)
         self.TV.bind(minimum_height = self.TV.setter('height'))
@@ -85,8 +84,8 @@ class View_Nodes_Scroll(View_Database):
 
         self.add_widget(SV)
 
-    def update(self):
-        self.TV.update()
+    def update(self, core):
+        self.TV.update(core)
 
     @property
     def my_selected_node(self):
@@ -100,7 +99,7 @@ class View_Recipe_Node(Label):
         self.recipe_node = recipe_node
         self.recipe_node.observers.append(self)
 
-    def update(self):
+    def update(self, core):
         self.text = self.recipe_node.__str__()
 
 class View_Nodes_Modify_Quantity(View_Database):
@@ -125,7 +124,7 @@ class View_Nodes_Modify_Quantity(View_Database):
         self.grid_nodes = []
 
 
-    def update(self):
+    def update(self, core):
 
         for gn in self.grid_nodes.copy():
             self.grid.remove_widget(gn)

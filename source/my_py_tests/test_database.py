@@ -2,6 +2,7 @@ import sys, os
 sys.path.insert(0, os.path.abspath('..'))
 import pytest
 import database.database as db
+import database.database_lib as dbl
 import database.node as nd
 
 
@@ -9,14 +10,14 @@ class Observer_1():
 
 	name = 'not assigned in observer_1'
 
-	def update(self):
+	def update(self, odb):
 		self.name = 'observer_1'
 
 class Observer_2():
 
 	name = 'not assigned in observer_2'
 
-	def update(self):
+	def update(self, odb):
 		self.name = 'observer_2'
 
 
@@ -41,18 +42,6 @@ class Test_OD_interface_1():
 	filename = 'temp'
 	OD = db.OD_Scaffold('temp')
 	OD_type = db.OD_Scaffold
-
-	def test_update_1(self):
-
-		O1 = Observer_1()
-		O2 = Observer_2()
-		
-		self.OD.observers.append(O1)
-		self.OD.observers.append(O2)
-		self.OD.update_observers()
-
-		assert O1.name == 'observer_1'
-		assert O2.name == 'observer_2'
 
 	def test_add_1(self):
 		
@@ -147,7 +136,7 @@ def test_update_1():
 	assert R12 in obs_data
 	assert R2 in obs_data
 
-	obs_data.attach_core(core_data, db.is_consistent_ingredient_OD_recipe_node)
+	obs_data.attach_core(core_data, dbl.process_core_node_db, dbl.process_obs_recipe_ing)
 	core_data.remove(ing1)
 	core_data.update_observers()
 
@@ -192,13 +181,71 @@ def test_update_2():
 	assert ing2 in obs_data
 	assert ing3 in obs_data
 
-	obs_data.attach_core(core_data, db.is_consistent_nodeOD_node)
+	obs_data.attach_core(core_data, dbl.process_core_node_db, dbl.process_obs_node_db)
 	core_data.remove(ing1)
 	core_data.update_observers()
 
 	assert ing1 not in obs_data
 	assert ing2 in obs_data
 	assert ing3 in obs_data
+
+
+	core_name = 'temp_core.json'
+	if os.path.exists(core_name):
+		os.remove(core_name)
+
+	obs_name = 'temp_observer.json'
+	if os.path.exists(obs_name):
+		os.remove(obs_name)
+
+def test_update_3():
+
+
+	core_name = 'temp_core.json'
+	if os.path.exists(core_name):
+		os.remove(core_name)
+	core_data = db.OD_Scaffold(core_name)
+
+	obs_name = 'temp_observer.json'
+	if os.path.exists(obs_name):
+		os.remove(obs_name)
+	obs_data = db.OD_Scaffold(obs_name)
+
+
+	qt1 = nd.Node('cups')
+	qt2 = nd.Node('packages')
+	core_data.add(qt1)
+	core_data.add(qt2)
+
+	QI1 = nd.Quantity_Ingredient(quantity=1, quantity_type='cups', name='ing1')
+	QI2 = nd.Quantity_Ingredient(quantity=1, quantity_type='packages', name='ing2')
+	
+	R1 = nd.Recipe_Node(name='R1')
+	R1.QI_list.append(QI1)
+
+	R12 = nd.Recipe_Node(name='R12')
+	R12.QI_list.append(QI1)
+	R12.QI_list.append(QI2)
+
+	R2 = nd.Recipe_Node(name='R2')
+	R2.QI_list.append(QI2)
+
+	obs_data.add(R1)
+	obs_data.add(R12)
+	obs_data.add(R2)
+
+	assert R1 in obs_data
+	assert R12 in obs_data
+	assert R2 in obs_data
+
+	obs_data.attach_core(core_data, dbl.process_core_node_db, dbl.process_obs_recipe_qtype)
+	
+	core_data.remove(qt1)
+	core_data.update_observers()
+
+	assert R1 not in obs_data
+	assert R12 not in obs_data
+	assert R2 in obs_data
 
 
 	core_name = 'temp_core.json'

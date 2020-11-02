@@ -7,6 +7,7 @@ from kivy.uix.screenmanager import FallOutTransition
 import os 
 
 import database.database as db
+import database.database_lib as dbl
 import ingredients.ingredients as ig
 import quantities.quantities as qt
 import add_recipe.recipe_manager as rm
@@ -31,9 +32,9 @@ class Shopping(ScreenManager):
 
 		cookbook_data = db.OD_Scaffold('cookbook.json')
 
-		cookbook_data.attach_core(ingredient_data, db.is_consistent_ingredient_OD_recipe_node)
-		cookbook_data.attach_core(quantities_data, db.is_consistent_quantity_type_OD_recipe_node)
-
+		cookbook_data.attach_core(ingredient_data, dbl.process_core_node_db, dbl.process_obs_recipe_ing)
+		cookbook_data.attach_core(quantities_data, dbl.process_core_node_db, dbl.process_obs_recipe_qtype)
+		
 		shop_cook_filename = 'shopping_cookbook.json'
 		if os.path.exists(shop_cook_filename):
 			os.remove(shop_cook_filename)
