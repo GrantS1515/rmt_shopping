@@ -99,12 +99,12 @@ class Test_OD_interface_1():
 def test_update_1():
 
 
-	core_name = 'temp_core.json'
+	core_name = 'temp_core'
 	if os.path.exists(core_name):
 		os.remove(core_name)
 	core_data = db.OD_Scaffold(core_name)
 
-	obs_name = 'temp_observer.json'
+	obs_name = 'temp_observer'
 	if os.path.exists(obs_name):
 		os.remove(obs_name)
 	obs_data = db.OD_Scaffold(obs_name)
@@ -145,11 +145,11 @@ def test_update_1():
 	assert R2 in obs_data
 
 
-	core_name = 'temp_core.json'
+	core_name = 'temp_core'
 	if os.path.exists(core_name):
 		os.remove(core_name)
 
-	obs_name = 'temp_observer.json'
+	obs_name = 'temp_observer'
 	if os.path.exists(obs_name):
 		os.remove(obs_name)
 
@@ -201,12 +201,12 @@ def test_update_2():
 def test_update_3():
 
 
-	core_name = 'temp_core.json'
+	core_name = 'temp_core'
 	if os.path.exists(core_name):
 		os.remove(core_name)
 	core_data = db.OD_Scaffold(core_name)
 
-	obs_name = 'temp_observer.json'
+	obs_name = 'temp_observer'
 	if os.path.exists(obs_name):
 		os.remove(obs_name)
 	obs_data = db.OD_Scaffold(obs_name)
@@ -248,10 +248,10 @@ def test_update_3():
 	assert R2 in obs_data
 
 
-	core_name = 'temp_core.json'
+	core_name = 'temp_core'
 	if os.path.exists(core_name):
 		os.remove(core_name)
 
-	obs_name = 'temp_observer.json'
+	obs_name = 'temp_observer'
 	if os.path.exists(obs_name):
 		os.remove(obs_name)

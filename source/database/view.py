@@ -27,6 +27,7 @@ class Viewable_TreeView(TreeView):
         super().__init__(**kwargs)
         self._nodestr2node = {}
         self.data = data
+        self._name2treenode = {}
         self._build_view(0)
         
     def _clear_view(self):
@@ -34,11 +35,18 @@ class Viewable_TreeView(TreeView):
             self.remove_node(tree_node)
 
     def _build_view(self, dt):
-        for node in self.data:
+        for node in tuple(self.data):
+
             node_str = node.__str__()
             self._nodestr2node[node_str] = node
             TV_node = TreeViewLabel(text=node_str)
-            self.add_node(TV_node)
+            self._name2treenode[node.name] = TV_node
+
+            if self.data.predecessors(node) == []:
+                self.add_node(TV_node)
+            else:
+                for i in self.data.predecessors(node):
+                    self.add_node(TV_node, self._name2treenode[i.name])
 
     @property
     def my_selected_node(self):
@@ -60,14 +68,14 @@ class View_Nodes_Scaffold(View_Database):
         super().__init__(data, **kwargs)
         self.TV = Viewable_TreeView(data, **kwargs)
         self.add_widget(self.TV)
-        self.update()
+        self.update(data)
 
     @property
     def my_selected_node(self):
         return self.TV.my_selected_node
 
     def update(self, core):
-        self.TV.update()
+        self.TV.update(core)
 
 class View_Nodes_Scroll(View_Database):
     def __init__(self, data, **kwargs):
@@ -153,7 +161,6 @@ def dec_QI(QI_node):
 def inc_QI(QI_node):
     QI_node.quantity += 1
 
-from kivy.properties import ObjectProperty, BooleanProperty
 class View_Modify_Quantity_Node(RelativeLayout):
 
     def __init__(self, data, node, left_func, right_func, **kwargs):
